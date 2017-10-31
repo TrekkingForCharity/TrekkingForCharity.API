@@ -39,16 +39,12 @@ Task("__Publish")
     
     MSBuild("../source/TrekkingForCharity.Api.App/TrekkingForCharity.Api.App.csproj", msbuildSettings);
 
-    msbuildSettings = new MSBuildSettings {
-      Verbosity = Verbosity.Minimal,
-      ToolVersion = MSBuildToolVersion.VS2017,
-      Configuration = "Release",
-      PlatformTarget = PlatformTarget.MSIL
-    };
-    msbuildSettings.WithProperty("OutDir", MakeAbsolute(clientPublishPath).ToString());
-    
-    MSBuild("../source/TrekkingForCharity.Api.Client/TrekkingForCharity.Api.Client.csproj", msbuildSettings);
+    var settings = new DotNetCorePublishSettings {
+         Configuration = "Release",
+         OutputDirectory = clientPublishPath
+     };
 
+     DotNetCorePublish("../source/TrekkingForCharity.Api.Client/TrekkingForCharity.Api.Client.csproj", settings);    
   });
 
 Task("Build")

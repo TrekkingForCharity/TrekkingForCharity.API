@@ -16,11 +16,13 @@ namespace TrekkingForCharity.Api.Client
     public class ApiClientHttpClientHandler : HttpClientHandler
     {
         private readonly Func<Task<string>> _getToken;
+        private readonly string _functionsKey;
         private readonly Policy _policy;
 
-        public ApiClientHttpClientHandler(Func<Task<string>> getToken)
+        public ApiClientHttpClientHandler(Func<Task<string>> getToken, string functionsKey)
         {
             this._getToken = getToken;
+            this._functionsKey = functionsKey;
             this._policy = Policy
                 .Handle<HttpRequestException>()
                 .WaitAndRetryAsync(new[]
@@ -40,6 +42,8 @@ namespace TrekkingForCharity.Api.Client
                 var token = await this._getToken();
                 request.Headers.Authorization = new AuthenticationHeaderValue(auth.Scheme, token);
             }
+
+            request.Headers.Add("x-functions-key", this._functionsKey);
 
             return await this._policy.ExecuteAsync(() => base.SendAsync(request, cancellationToken))
                 .ConfigureAwait(false);

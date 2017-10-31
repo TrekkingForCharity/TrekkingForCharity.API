@@ -18,14 +18,12 @@ namespace TrekkingForCharity.Api.Client
 {
     public class ApiClient : IApiClient
     {
-        private readonly IApiConfiguration _apiConfiguration;
         private readonly IApiInternal _apiInternal;
 
         public ApiClient(IApiConfiguration apiConfiguration)
         {
-            this._apiConfiguration = apiConfiguration;
             this._apiInternal = RestService.For<IApiInternal>(
-                new HttpClient(new ApiClientHttpClientHandler(apiConfiguration.GetToken))
+                new HttpClient(new ApiClientHttpClientHandler(apiConfiguration.GetToken,apiConfiguration.ApiKey))
                 {
                     BaseAddress = new Uri(apiConfiguration.BaseUrl)
                 });
