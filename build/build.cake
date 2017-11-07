@@ -37,11 +37,12 @@ Task("__Versioning")
       XmlPoke(file, "/Project/PropertyGroup/FileVersion", version);
       XmlPoke(file, "/Project/PropertyGroup/Version", version);
     }
-
-    GitVersion(new GitVersionSettings {
+    if (AppVeyor.IsRunningOnAppVeyor) {
+      GitVersion(new GitVersionSettings {
         UpdateAssemblyInfo = true, 
         OutputType = GitVersionOutput.BuildServer
-    });
+      });
+    }
   });
 Task("__NugetRestore")
   .Does(() => {
@@ -85,8 +86,12 @@ Task("__Publish")
   });
 Task("__Package")
   .Does(() => {
-      Zip("./publish/app", releasePath + File("TrekkingForCharity.Api.App.zip"));
+      Zip("./publish/app", releasePath + File("TrekkingForCharity.Api.App." + version +".zip"));
       MoveFileToDirectory("../source/TrekkingForCharity.Api.Client/bin/Release/TrekkingForCharity.Api.Client." + version +".nupkg", clientPath);
+      if (AppVeyor.IsRunningOnAppVeyor) {
+        AppVeyor.UploadArtifact(releasePath + File("TrekkingForCharity.Api.App." + version +".zip"))
+        AppVeyor.UploadArtifact(clientPath + File("TrekkingForCharity.Api.Client." + version +".nupkg"))
+      }
   });
 
 Teardown(context => {
