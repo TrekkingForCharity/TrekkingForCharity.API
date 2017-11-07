@@ -27,11 +27,9 @@ Task("__Clean")
   });
 Task("__Versioning")
   .Does(() => {
-    var gitVersion = GitVersion(new GitVersionSettings {
-        UpdateAssemblyInfo = true
-    });
+    var gitVersion = GitVersion();
     version = gitVersion.NuGetVersion;
-
+    
     var files = GetFiles("../source/**/*.csproj");
     foreach (var file in files) {
       Information(file);
@@ -39,6 +37,11 @@ Task("__Versioning")
       XmlPoke(file, "/Project/PropertyGroup/FileVersion", version);
       XmlPoke(file, "/Project/PropertyGroup/Version", version);
     }
+
+    GitVersion(new GitVersionSettings {
+        UpdateAssemblyInfo = true, 
+        OutputType = GitVersionOutput.BuildServer
+    });
   });
 Task("__NugetRestore")
   .Does(() => {
@@ -48,12 +51,16 @@ Task("__Test")
   .Does(() => {
     var projectFiles = GetFiles("../tests/**/*.csproj");
     foreach(var file in projectFiles) {
+      var testFilePath = string.Format("{0}.trx", MakeAbsolute(testPath + File(file.GetFilenameWithoutExtension().ToString())).FullPath);
         var settings = new DotNetCoreTestSettings {
           Configuration = "Release",
-          Logger = string.Format("trx;LogFileName={0}.trx", MakeAbsolute(testPath + File(file.GetFilenameWithoutExtension().ToString())).FullPath)
+          Logger = string.Format("trx;LogFileName={0}", testFilePath)
         };
 
         DotNetCoreTest(file.FullPath, settings);
+        if (AppVeyor.IsRunningOnAppVeyor) {
+          AppVeyor.UploadTestResults(testFilePath, AppVeyorTestResultsType.XUnit);
+        }
     }
   });
 Task("__Publish")
