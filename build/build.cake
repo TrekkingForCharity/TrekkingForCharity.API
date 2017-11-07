@@ -89,8 +89,8 @@ Task("__Package")
       Zip("./publish/app", releasePath + File("TrekkingForCharity.Api.App." + version +".zip"));
       MoveFileToDirectory("../source/TrekkingForCharity.Api.Client/bin/Release/TrekkingForCharity.Api.Client." + version +".nupkg", clientPath);
       if (AppVeyor.IsRunningOnAppVeyor) {
-        AppVeyor.UploadArtifact(releasePath + File("TrekkingForCharity.Api.App." + version +".zip"))
-        AppVeyor.UploadArtifact(clientPath + File("TrekkingForCharity.Api.Client." + version +".nupkg"))
+        AppVeyor.UploadArtifact(releasePath + File("TrekkingForCharity.Api.App." + version +".zip"));
+        AppVeyor.UploadArtifact(clientPath + File("TrekkingForCharity.Api.Client." + version +".nupkg"));
       }
   });
 
