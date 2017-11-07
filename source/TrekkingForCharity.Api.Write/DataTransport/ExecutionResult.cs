@@ -4,6 +4,7 @@
 // TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
+using System;
 using System.Collections.Generic;
 
 namespace TrekkingForCharity.Api.Write.DataTransport
@@ -19,8 +20,8 @@ namespace TrekkingForCharity.Api.Write.DataTransport
 
         private ExecutionResult(bool suceeded, dynamic successReference = null, string errorCode = null, string failMessage = null)
         {
-            this.FailMessage = suceeded ? string.Empty : failMessage;
-            this.ErrorCode = suceeded ? string.Empty : errorCode;
+            this.FailMessage = suceeded ? string.Empty : failMessage ?? string.Empty;
+            this.ErrorCode = suceeded ? string.Empty : errorCode ?? string.Empty;
             this.Result = suceeded ? successReference : null;
             this.Success = suceeded;
             this._errors = new List<ValidationError>();
@@ -63,6 +64,11 @@ namespace TrekkingForCharity.Api.Write.DataTransport
 
         public void AddError(string property, string errorCode, string message)
         {
+            if (this.Success)
+            {
+                throw new Exception("Cannot add error to a successful result");
+            }
+
             this._errors.Add(new ValidationError(property, errorCode, message));
         }
     }
