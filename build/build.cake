@@ -46,12 +46,15 @@ Task("__NugetRestore")
   });
 Task("__Test")
   .Does(() => {
-var projectFiles = GetFiles("../tests/**/*.csproj");
-    foreach(var file in projectFiles)
-    {
-        DotNetCoreTest(file.FullPath);
-    }
+    var projectFiles = GetFiles("../tests/**/*.csproj");
+    foreach(var file in projectFiles) {
+        var settings = new DotNetCoreTestSettings {
+          Configuration = "Release",
+          Logger = string.Format("trx;LogFileName={0}.trx", MakeAbsolute(testPath + File(file.GetFilenameWithoutExtension().ToString())).FullPath)
+        };
 
+        DotNetCoreTest(file.FullPath, settings);
+    }
   });
 Task("__Publish")
   .Does(() => {
