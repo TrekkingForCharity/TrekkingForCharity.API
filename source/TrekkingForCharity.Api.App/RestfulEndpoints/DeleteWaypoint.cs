@@ -26,7 +26,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
     {
         [FunctionName("DeleteWaypoint")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "treks/{trekId}/waypoints/{waypointId}")]
+            [HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "treks/{trekId}/waypoints/{waypointId}")]
             HttpRequestMessage req,
             [Table("trek")] CloudTable trekTable,
             [Table("waypoint")] CloudTable waypointTable,

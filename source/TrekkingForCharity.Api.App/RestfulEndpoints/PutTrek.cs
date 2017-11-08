@@ -26,7 +26,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
     {
         [FunctionName("PutTrek")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "treks/{trekId}")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Admin, "put", Route = "treks/{trekId}")] HttpRequestMessage req,
             [Table("trek", Connection = "")] CloudTable trekTable,
             string trekId,
             TraceWriter log)

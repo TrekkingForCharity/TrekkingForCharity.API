@@ -18,7 +18,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
     {
         [FunctionName("GetWaypointsForTrek")]
         public static HttpResponseMessage Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "treks/{trekId}/waypoints")]
+            [HttpTrigger(AuthorizationLevel.Admin, "get", Route = "treks/{trekId}/waypoints")]
             HttpRequestMessage req,
             [Table("waypoint")] IQueryable<Waypoint> waypointTable,
             string trekId,

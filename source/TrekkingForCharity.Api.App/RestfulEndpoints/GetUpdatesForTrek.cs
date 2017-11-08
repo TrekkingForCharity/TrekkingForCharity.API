@@ -18,7 +18,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
     {
         [FunctionName("GetUpdatesForTrek")]
         public static HttpResponseMessage Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "treks/{trekId}/updates")]
+            [HttpTrigger(AuthorizationLevel.Admin, "get", Route = "treks/{trekId}/updates")]
             HttpRequestMessage req,
             [Table("updates")] IQueryable<Update> updateTable,
             string trekId,

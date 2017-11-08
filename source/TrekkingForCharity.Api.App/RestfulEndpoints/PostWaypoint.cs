@@ -26,7 +26,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
     {
         [FunctionName("PostWaypoint")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "treks/{trekId}/waypoints")]
+            [HttpTrigger(AuthorizationLevel.Admin, "post", Route = "treks/{trekId}/waypoints")]
             HttpRequestMessage req,
             [Table("trek")] CloudTable trekTable,
             [Table("waypoint")] CloudTable updateTable,

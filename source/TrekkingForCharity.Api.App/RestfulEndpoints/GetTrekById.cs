@@ -19,7 +19,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
     {
         [FunctionName("GetTrekById")]
         public static HttpResponseMessage Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "treks/{trekId}")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Admin, "get", Route = "treks/{trekId}")] HttpRequestMessage req,
             [Table("trek", Connection = "")] IQueryable<Trek> trekTable,
             string trekId,
             TraceWriter log)

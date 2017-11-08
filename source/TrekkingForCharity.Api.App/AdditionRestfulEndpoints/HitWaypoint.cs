@@ -23,7 +23,7 @@ namespace TrekkingForCharity.Api.App.AdditionRestfulEndpoints
     {
         [FunctionName("HitWaypoint")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "treks/{trekId}/waypoints/{waypointId}/hit")]
+            [HttpTrigger(AuthorizationLevel.Admin, "post", Route = "treks/{trekId}/waypoints/{waypointId}/hit")]
             HttpRequestMessage req,
             [Table("trek")] CloudTable trekTable,
             [Table("waypoint")] CloudTable waypointTable,
