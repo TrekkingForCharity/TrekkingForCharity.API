@@ -22,7 +22,6 @@ Task("__Clean")
 
       CreateDirectory(publishPath);
       CreateDirectory(releasePath);
-      CreateDirectory(clientPath);
       CreateDirectory(testPath);
   });
 Task("__Versioning")
@@ -77,20 +76,12 @@ Task("__Publish")
     
     MSBuild("../source/TrekkingForCharity.Api.App/TrekkingForCharity.Api.App.csproj", msbuildSettings);
 
-    var settings = new DotNetCorePublishSettings {
-         Configuration = "Release",
-         OutputDirectory = clientPublishPath
-     };
-    
-     DotNetCorePublish("../source/TrekkingForCharity.Api.Client/TrekkingForCharity.Api.Client.csproj", settings);    
   });
 Task("__Package")
   .Does(() => {
-      Zip(appPublishPath, releasePath + File("TrekkingForCharity.Api.App.zip"));
-      MoveFileToDirectory("../source/TrekkingForCharity.Api.Client/bin/Release/TrekkingForCharity.Api.Client." + version +".nupkg", clientPath);
+      Zip(appPublishPath, releasePath + File("TrekkingForCharity.Api.App.zip"));      
       if (AppVeyor.IsRunningOnAppVeyor) {
-        AppVeyor.UploadArtifact(releasePath + File("TrekkingForCharity.Api.App.zip"));
-        AppVeyor.UploadArtifact(clientPath + File("TrekkingForCharity.Api.Client." + version +".nupkg"));
+        AppVeyor.UploadArtifact(releasePath + File("TrekkingForCharity.Api.App.zip"));        
       }
   });
 
