@@ -25,7 +25,7 @@ namespace TrekkingForCharity.Api.Read.Tests
             var update = new Update
             {
                 PartitionKey = Guid.NewGuid().ToString(),
-                RowKey = Guid.NewGuid().ToString(),
+                RowKey = 1.ToString(),
             };
             var serializedObject = JsonConvert.SerializeObject(update).ToLower();
             Assert.False(serializedObject.Contains("partitionkey"));
@@ -38,7 +38,7 @@ namespace TrekkingForCharity.Api.Read.Tests
             var waypoint = new Waypoint
             {
                 PartitionKey = Guid.NewGuid().ToString(),
-                RowKey = Guid.NewGuid().ToString(),
+                RowKey = 1.ToString(),
             };
             var serializedObject = JsonConvert.SerializeObject(waypoint).ToLower();
             Assert.False(serializedObject.Contains("partitionkey"));
