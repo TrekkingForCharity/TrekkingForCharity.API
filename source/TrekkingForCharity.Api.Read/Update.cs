@@ -26,10 +26,7 @@ namespace TrekkingForCharity.Api.Read
         public string Message { get; set; }
 
         [JsonProperty]
-        public DateTime WhenCreated { get; set; }
-
-        [JsonProperty]
-        public Guid Id => Guid.Parse(this.RowKey);
+        public int WhenCreated => int.Parse(this.RowKey);
 
         [JsonProperty]
         public Guid TrekId => Guid.Parse(this.PartitionKey);

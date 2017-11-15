@@ -78,7 +78,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                         ErrorCodes.Creation, "Something went wrong when trying to update the trek");
                 }
 
-                return req.CreateEmtptySuccessResponseMessage();
+                return req.CreateEmptySuccessResponseMessage();
             }
             catch (Exception ex)
             {

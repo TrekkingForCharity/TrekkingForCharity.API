@@ -20,14 +20,11 @@ namespace TrekkingForCharity.Api.Read
         public double Lat { get; set; }
 
         [JsonProperty]
-        public DateTime WhenToHit { get; set; }
+        public int HitTargetEpoch => int.Parse(this.RowKey);
 
         [JsonProperty]
-        public DateTime? WhenHit { get; set; }
-
-        [JsonProperty]
-        public Guid Id => Guid.Parse(this.RowKey);
-
+        public int? HitActualEpoch { get; set; }
+        
         [JsonProperty]
         public Guid TrekId => Guid.Parse(this.PartitionKey);
     }

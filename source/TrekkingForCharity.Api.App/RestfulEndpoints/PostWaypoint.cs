@@ -62,7 +62,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
 
                 updateTable.CreateIfNotExists();
 
-                var update = new Waypoint(cmd.Lng, cmd.Lat, cmd.WhenToHit, Guid.Parse(trekId));
+                var update = new Waypoint(cmd.Lng, cmd.Lat, cmd.HitEpoch, Guid.Parse(trekId));
 
                 var result = await updateTable.CreateEntity(update);
                 if (result.IsFailure)
@@ -71,7 +71,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                         ErrorCodes.Creation, "Something went wrong when trying to create the trek");
                 }
 
-                return req.CreateEmtptySuccessResponseMessage();
+                return req.CreateEmptySuccessResponseMessage();
             }
             catch (Exception ex)
             {

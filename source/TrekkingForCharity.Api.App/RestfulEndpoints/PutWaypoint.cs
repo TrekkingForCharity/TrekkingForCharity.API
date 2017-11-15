@@ -69,18 +69,19 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                 }
 
                 var waypoint = result.Value;
+                await waypointTable.ExecuteAsync(TableOperation.Delete(waypoint));
 
-                waypoint.UpdateBasicDetails(cmd.Lng, cmd.Lat, cmd.WhenToHit);
+                waypoint.UpdateBasicDetails(cmd.Lng, cmd.Lat, cmd.NewHitEpoch);
 
-                var updateResult = await waypointTable.UpdateEntity(waypoint);
+                var createResult = await waypointTable.CreateEntity(waypoint);
 
-                if (updateResult.IsFailure)
+                if (createResult.IsFailure)
                 {
                     return req.CreateApiErrorResponse(
                         ErrorCodes.Creation, "Something went wrong when trying to update the trek");
                 }
 
-                return req.CreateEmtptySuccessResponseMessage();
+                return req.CreateResponseCamelCase(waypoint.ToRead());
             }
             catch (Exception ex)
             {
