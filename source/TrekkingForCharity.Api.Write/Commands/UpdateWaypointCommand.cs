@@ -12,6 +12,6 @@ namespace TrekkingForCharity.Api.Write.Commands
 
         public double Lat { get; set; }
 
-        public int NewHitEpoch { get; set; }
+        public int WhenToReach { get; set; }
     }
 }

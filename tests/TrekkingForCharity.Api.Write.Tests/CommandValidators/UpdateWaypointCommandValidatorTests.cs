@@ -26,7 +26,8 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
             var command = new UpdateWaypointCommand
             {
                 Lat = lat,
-                Lng = lng
+                Lng = lng,
+                WhenToReach = 1
             };
             var result = validator.Validate(command);
             Assert.True(result.IsValid);
@@ -42,7 +43,8 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
             var command = new UpdateWaypointCommand
             {
                 Lat = 0,
-                Lng = lng
+                Lng = lng,
+                WhenToReach = 1
             };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
@@ -58,7 +60,8 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
             var command = new UpdateWaypointCommand
             {
                 Lat = lat,
-                Lng = 0
+                Lng = 0,
+                WhenToReach = 1
             };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);

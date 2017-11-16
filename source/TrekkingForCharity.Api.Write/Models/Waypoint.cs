@@ -28,17 +28,17 @@ namespace TrekkingForCharity.Api.Write.Models
 
         public double Lat { get; set; }
 
-        public int? HitActualEpoch { get; set; }
+        public int? WhenReached { get; set; }
 
         [IgnoreProperty]
-        public int HitTargetEpoch => int.Parse(this.RowKey);
+        public int WhenToReach => int.Parse(this.RowKey);
 
         [IgnoreProperty]
         public Guid TrekId => Guid.Parse(this.PartitionKey);
 
         public void Hit()
         {
-            this.HitActualEpoch = DateTime.UtcNow.ToEpoch();
+            this.WhenReached = DateTime.UtcNow.ToEpoch();
         }
 
         public void UpdateBasicDetails(double lng, double lat, int hitEpoch)

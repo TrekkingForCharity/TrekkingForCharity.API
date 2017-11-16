@@ -41,6 +41,12 @@ namespace TrekkingForCharity.Api.App.Helpers
             return req.CreateResponseCamelCase(executionResult);
         }
 
+        public static HttpResponseMessage CreateSuccessResponseMessage(this HttpRequestMessage req, object obj)
+        {
+            var executionResult = ExecutionResult.CreateSuccessfulExecutionResult(obj);
+            return req.CreateResponseCamelCase(executionResult);
+        }
+
         public static HttpResponseMessage CreateResponseCamelCase(this HttpRequestMessage req, object obj, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
         {
             return req.CreateResponse(httpStatusCode, obj, new JsonMediaTypeFormatter

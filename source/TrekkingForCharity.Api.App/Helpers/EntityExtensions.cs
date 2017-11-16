@@ -16,9 +16,36 @@ namespace TrekkingForCharity.Api.App.Helpers
                 Lat = writeWaypoint.Lng,
                 PartitionKey = writeWaypoint.PartitionKey,
                 RowKey = writeWaypoint.RowKey,
-                HitActualEpoch = writeWaypoint.HitActualEpoch
+                WhenReached = writeWaypoint.WhenReached
             };
             return readWaypoint;
+        }
+
+        public static Read.Update ToRead(this Write.Models.Update writeUpdate)
+        {
+            var readUpdate = new Read.Update
+            {
+                Lng = writeUpdate.Lng,
+                Lat = writeUpdate.Lat,
+                Message = writeUpdate.Message,
+                Title = writeUpdate.Title,
+                PartitionKey = writeUpdate.PartitionKey,
+                RowKey = writeUpdate.RowKey
+            };
+            return readUpdate;
+        }
+
+        public static Read.Trek ToRead(this Write.Models.Trek writeTrek)
+        {
+            var readTrek = new Read.Trek
+            {
+                BannerImage = writeTrek.BannerImage,
+                Description = writeTrek.Description,
+                Name = writeTrek.Name,
+                WhenStarted = writeTrek.WhenStarted,
+                WhenToStart = writeTrek.WhenToStart
+            };
+            return readTrek;
         }
     }
 }
