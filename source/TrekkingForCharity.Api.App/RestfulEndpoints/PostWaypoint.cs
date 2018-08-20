@@ -29,7 +29,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
             [HttpTrigger(AuthorizationLevel.Admin, "post", Route = "treks/{trekId}/waypoints")]
             HttpRequestMessage req,
             [Table("trek")] CloudTable trekTable,
-            [Table("waypoint")] CloudTable updateTable,
+            [Table("waypoint")] CloudTable waypointTable,
             string trekId,
             TraceWriter log)
         {
@@ -60,11 +60,11 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                     return req.CreateResponse(HttpStatusCode.NotFound);
                 }
 
-                updateTable.CreateIfNotExists();
+                await waypointTable.CreateIfNotExistsAsync();
 
                 var update = new Waypoint(cmd.Lng, cmd.Lat, cmd.WhenToReach, Guid.Parse(trekId));
 
-                var result = await updateTable.CreateEntity(update);
+                var result = await waypointTable.CreateEntity(update);
                 if (result.IsFailure)
                 {
                     return req.CreateApiErrorResponse(

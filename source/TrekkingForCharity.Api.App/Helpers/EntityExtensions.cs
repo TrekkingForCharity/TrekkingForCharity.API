@@ -4,6 +4,8 @@
 // TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
+using Slugify;
+
 namespace TrekkingForCharity.Api.App.Helpers
 {
     public static class EntityExtensions
@@ -35,7 +37,7 @@ namespace TrekkingForCharity.Api.App.Helpers
             return readUpdate;
         }
 
-        public static Read.Trek ToRead(this Write.Models.Trek writeTrek)
+        public static Read.Trek ToRead(this Write.Models.Trek writeTrek, ISlugHelper slugHelper)
         {
             var readTrek = new Read.Trek
             {
@@ -43,7 +45,8 @@ namespace TrekkingForCharity.Api.App.Helpers
                 Description = writeTrek.Description,
                 Name = writeTrek.Name,
                 WhenStarted = writeTrek.WhenStarted,
-                WhenToStart = writeTrek.WhenToStart
+                WhenToStart = writeTrek.WhenToStart,
+                Slug = slugHelper.GenerateSlug(writeTrek.Name)
             };
             return readTrek;
         }

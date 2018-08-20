@@ -36,5 +36,8 @@ namespace TrekkingForCharity.Api.Read
 
         [JsonProperty]
         public string UserId => this.PartitionKey;
+
+        [JsonProperty]
+        public string Slug { get; set; }
     }
 }

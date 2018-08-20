@@ -10,6 +10,8 @@ namespace TrekkingForCharity.Api.Write.Commands
 {
     public class CreateWaypointCommand
     {
+        public string Name { get; set; }
+
         public double Lng { get; set; }
 
         public double Lat { get; set; }

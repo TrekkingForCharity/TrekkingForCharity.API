@@ -59,7 +59,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                     return req.CreateResponse(HttpStatusCode.NotFound);
                 }
 
-                updateTable.CreateIfNotExists();
+                await updateTable.CreateIfNotExistsAsync();
 
                 var update = new Update(cmd.Lng, cmd.Lat, cmd.Title, cmd.Message, Guid.Parse(trekId));
 

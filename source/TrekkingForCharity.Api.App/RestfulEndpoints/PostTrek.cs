@@ -28,6 +28,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
         public static async Task<HttpResponseMessage> Run(
             [HttpTrigger(AuthorizationLevel.Admin, "post", Route = "treks")] HttpRequestMessage req,
             [Table("trek")] CloudTable trekTable,
+            [Table("trek-slug")] CloudTable trekSlugTable,
             TraceWriter log)
         {
             try
@@ -51,11 +52,23 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                     return req.CreateApiErrorResponseFromValidateResults(validationResult);
                 }
 
-                trekTable.CreateIfNotExists();
+                await trekTable.CreateIfNotExistsAsync();
+                await trekSlugTable.CreateIfNotExistsAsync();
 
                 var trek = new Trek(cmd.Name, cmd.Description, cmd.BannerImage, cmd.WhenToStart, userId);
 
                 var result = await trekTable.CreateEntity(trek);
+                if (result.IsFailure)
+                {
+                    return req.CreateApiErrorResponse(
+                        ErrorCodes.Creation, "Something went wrong when trying to create the trek");
+                }
+
+                var slugify = new Slugify.SlugHelper();
+                var slug = slugify.GenerateSlug(cmd.Name);
+
+                var trekSlug = new TrekSlug(slug.First(), slug, $"{trek.PartitionKey}¬{trek.RowKey}");
+                result = await trekSlugTable.CreateEntity(trekSlug);
                 if (result.IsFailure)
                 {
                     return req.CreateApiErrorResponse(

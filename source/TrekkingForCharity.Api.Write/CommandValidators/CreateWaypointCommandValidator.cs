@@ -14,6 +14,7 @@ namespace TrekkingForCharity.Api.Write.CommandValidators
     {
         public CreateWaypointCommandValidator()
         {
+            this.RuleFor(x => x.Name).NotEmpty().WithErrorCode(ValidationCodes.FieldIsRequired);
             this.RuleFor(x => x.Lng).InclusiveBetween(-180, 180).WithErrorCode(ValidationCodes.FieldNotInRange);
             this.RuleFor(x => x.Lat).InclusiveBetween(-90, 90).WithErrorCode(ValidationCodes.FieldNotInRange);
         }
