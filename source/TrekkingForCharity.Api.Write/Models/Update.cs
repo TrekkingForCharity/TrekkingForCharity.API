@@ -5,7 +5,6 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System;
-using Epoch.net;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace TrekkingForCharity.Api.Write.Models
@@ -22,7 +21,7 @@ namespace TrekkingForCharity.Api.Write.Models
             this.Lat = lat;
             this.Title = title;
             this.Message = message;
-            this.RowKey = DateTime.UtcNow.ToEpoch().ToString();
+            this.RowKey = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
             this.PartitionKey = trekId.ToString();
         }
 

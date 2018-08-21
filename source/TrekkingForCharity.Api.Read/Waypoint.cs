@@ -20,10 +20,10 @@ namespace TrekkingForCharity.Api.Read
         public double Lat { get; set; }
 
         [JsonProperty]
-        public int WhenToReach => int.Parse(this.RowKey);
+        public long WhenToReach => long.Parse(this.RowKey);
 
         [JsonProperty]
-        public int? WhenReached { get; set; }
+        public long? WhenReached { get; set; }
         
         [JsonProperty]
         public Guid TrekId => Guid.Parse(this.PartitionKey);

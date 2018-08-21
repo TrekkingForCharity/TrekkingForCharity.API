@@ -23,7 +23,7 @@ namespace TrekkingForCharity.Api.App.Helpers
                 return Result.Fail<T, string>("Not Found");
             }
 
-            var obj = (T) result.Result;
+            var obj = (T)result.Result;
             if (obj == null)
             {
                 return Result.Fail<T, string>("Returned result not in given type");

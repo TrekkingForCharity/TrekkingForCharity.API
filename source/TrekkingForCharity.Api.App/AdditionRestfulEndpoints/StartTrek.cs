@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -23,17 +24,21 @@ namespace TrekkingForCharity.Api.App.AdditionRestfulEndpoints
     {
         [FunctionName("StartTrek")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Admin, "post", Route = "treks/{trekId}/start")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Admin, "post", Route = "treks/{trekId}/start")] HttpRequest req,
             [Table("trek", Connection = "")] CloudTable trekTable,
             string trekId,
-            TraceWriter log)
+            TraceWriter log,
+            ExecutionContext context)
         {
             try
             {
-                var principleMaybe = req.Headers.GetCurrentPrinciple();
+                var config = context.GenerateConfigurationRoot();
+                var cert = config["Cert"];
+
+                var principleMaybe = req.Headers.GetCurrentPrinciple(cert);
                 if (principleMaybe.HasNoValue)
                 {
-                    return req.CreateResponse(HttpStatusCode.Forbidden);
+                    return HttpRequestMessageHelpers.CreateResponse(HttpStatusCode.Forbidden);
                 }
 
                 var principle = principleMaybe.Value;
@@ -42,7 +47,7 @@ namespace TrekkingForCharity.Api.App.AdditionRestfulEndpoints
                 var result = await trekTable.RetrieveWithResult<Trek>(userId, trekId);
                 if (result.IsFailure)
                 {
-                    return req.CreateApiErrorResponseWithSingleValidationError("TrekId", ErrorCodes.TrekNotFound,
+                    return HttpRequestMessageHelpers.CreateApiErrorResponseWithSingleValidationError("TrekId", ErrorCodes.TrekNotFound,
                         $"Trek with Id {trekId} not found");
                 }
 
@@ -54,16 +59,16 @@ namespace TrekkingForCharity.Api.App.AdditionRestfulEndpoints
 
                 if (updateResult.IsFailure)
                 {
-                    return req.CreateApiErrorResponse(
+                    return HttpRequestMessageHelpers.CreateApiErrorResponse(
                         ErrorCodes.Creation, "Something went wrong when trying to update the trek");
                 }
 
-                return req.CreateEmptySuccessResponseMessage();
+                return HttpRequestMessageHelpers.CreateEmptySuccessResponseMessage();
             }
             catch (Exception ex)
             {
                 log.Error(ex.Message, ex);
-                return req.CreateResponse(HttpStatusCode.InternalServerError);
+                return HttpRequestMessageHelpers.CreateResponse(HttpStatusCode.InternalServerError);
             }
         }
     }

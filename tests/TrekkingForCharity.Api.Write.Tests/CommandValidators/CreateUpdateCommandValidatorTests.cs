@@ -46,7 +46,7 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
             };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
-            Assert.True(result.Errors.Any(x => x.PropertyName == "Lng"));
+            Assert.Contains(result.Errors, o => o.PropertyName == "Lng");
         }
 
         [Theory]
@@ -62,7 +62,7 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
             };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
-            Assert.True(result.Errors.Any(x => x.PropertyName == "Lat"));
+            Assert.Contains(result.Errors, o => o.PropertyName == "Lat");
         }
     }
 }

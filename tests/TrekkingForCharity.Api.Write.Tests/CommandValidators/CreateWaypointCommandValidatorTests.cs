@@ -14,17 +14,18 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
     public class CreateWaypointCommandValidatorTests
     {
         [Theory]
-        [InlineData(23, 128)]
-        [InlineData(-23, 128)]
-        [InlineData(23, -128)]
-        [InlineData(-23, -128)]
-        [InlineData(90, 180)]
-        [InlineData(-90, -180)]
-        public void ShouldNotErrorWhenModelIsValid(double lat, double lng)
+        [InlineData("test1", 23, 128)]
+        [InlineData("test2", -23, 128)]
+        [InlineData("test3", 23, -128)]
+        [InlineData("test4", -23, -128)]
+        [InlineData("test5", 90, 180)]
+        [InlineData("test6", -90, -180)]
+        public void ShouldNotErrorWhenModelIsValid(string name, double lat, double lng)
         {
             var validator = new CreateWaypointCommandValidator();
             var command = new CreateWaypointCommand
             {
+                Name = name,
                 Lat = lat,
                 Lng = lng
             };
@@ -46,7 +47,7 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
             };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
-            Assert.True(result.Errors.Any(x => x.PropertyName == "Lng"));
+            Assert.Contains(result.Errors, o => o.PropertyName == "Lng");
         }
 
         [Theory]
@@ -62,7 +63,7 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
             };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
-            Assert.True(result.Errors.Any(x => x.PropertyName == "Lat"));
+            Assert.Contains(result.Errors, o => o.PropertyName == "Lat");
         }
     }
 }

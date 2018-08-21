@@ -20,7 +20,7 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
             var command = new CreateTrekCommand { Description = "Trek Description" };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
-            Assert.True(result.Errors.Any(o => o.PropertyName == "Name"));
+            Assert.Contains(result.Errors, o => o.PropertyName == "Name");
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
             var command = new CreateTrekCommand { Name = "Trek Name" };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
-            Assert.True(result.Errors.Any(o => o.PropertyName == "Description"));
+            Assert.Contains(result.Errors, o => o.PropertyName == "Description");
         }
 
         [Fact]

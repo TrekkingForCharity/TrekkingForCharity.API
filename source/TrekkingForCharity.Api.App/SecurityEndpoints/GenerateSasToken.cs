@@ -1,12 +1,8 @@
-// An HTTP trigger Azure Function that returns a SAS token for Azure Storage for the specified container. 
-// You can also optionally specify a particular blob name and access permissions. 
-// To learn more, see https://github.com/Azure/azure-webjobs-sdk-templates/blob/master/Templates/SasToken-CSharp/readme.md
-
-// Request body format:
-// - `ContainerName` - *required*. Name of container in storage account
-// - `BlobName` - *optional*. Used to scope permissions to a particular blob
-// - `Permission` - *optional*. Default value is read permissions. The format matches the enum values of SharedAccessBlobPermissions. 
-//    Possible values are "Read", "Write", "Delete", "List", "Add", "Create". Comma-separate multiple permissions, such as "Read, Write, Create".
+// Copyright 2017 Trekking for Charity
+// This file is part of TrekkingForCharity.Api.
+// TrekkingForCharity.Api is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+// TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System;
 using System.IO;
@@ -25,8 +21,7 @@ namespace TrekkingForCharity.Api.App.SecurityEndpoints
         public static HttpResponseMessage Run(
             [HttpTrigger(AuthorizationLevel.Function, methods: "POST", Route = "security/generate-sas-token")]
             HttpRequestMessage req,
-            [Blob("demo", FileAccess.Read, Connection = "")]
-            CloudBlobDirectory blobDirectory,
+            [Blob("demo", FileAccess.Read, Connection = "")]CloudBlobDirectory blobDirectory,
             TraceWriter log)
         {
             var permissions = SharedAccessBlobPermissions.Write;
@@ -34,7 +29,8 @@ namespace TrekkingForCharity.Api.App.SecurityEndpoints
             var container = blobDirectory.Container;
             var sasToken = GetContainerSasToken(container, permissions);
 
-            return new HttpResponseMessage(HttpStatusCode.OK) {Content = new StringContent(sasToken)};
+            var run = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(sasToken) };
+            return run;
         }
 
         public static string GetContainerSasToken(CloudBlobContainer container, SharedAccessBlobPermissions permissions)

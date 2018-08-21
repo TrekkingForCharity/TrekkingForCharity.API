@@ -5,7 +5,6 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System;
-using Epoch.net;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace TrekkingForCharity.Api.Write.Models
@@ -16,7 +15,7 @@ namespace TrekkingForCharity.Api.Write.Models
         {
         }
 
-        public Waypoint(double lng, double lat, int whenToHit, Guid trekId)
+        public Waypoint(double lng, double lat, long whenToHit, Guid trekId)
         {
             this.RowKey = whenToHit.ToString();
             this.PartitionKey = trekId.ToString();
@@ -28,20 +27,20 @@ namespace TrekkingForCharity.Api.Write.Models
 
         public double Lat { get; set; }
 
-        public int? WhenReached { get; set; }
+        public long? WhenReached { get; set; }
 
         [IgnoreProperty]
-        public int WhenToReach => int.Parse(this.RowKey);
+        public long WhenToReach => long.Parse(this.RowKey);
 
         [IgnoreProperty]
         public Guid TrekId => Guid.Parse(this.PartitionKey);
 
         public void Hit()
         {
-            this.WhenReached = DateTime.UtcNow.ToEpoch();
+            this.WhenReached = DateTimeOffset.Now.ToUnixTimeSeconds();
         }
 
-        public void UpdateBasicDetails(double lng, double lat, int hitEpoch)
+        public void UpdateBasicDetails(double lng, double lat, long hitEpoch)
         {
             this.RowKey = hitEpoch.ToString();
             this.Lng = lng;

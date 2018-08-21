@@ -7,6 +7,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -19,7 +20,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
     {
         [FunctionName("GetTrekById")]
         public static HttpResponseMessage Run(
-            [HttpTrigger(AuthorizationLevel.Admin, "get", Route = "treks/{trekId}")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Admin, "get", Route = "treks/{trekId}")] HttpRequest req,
             [Table("trek")] IQueryable<Trek> trekTable,
             string trekId,
             TraceWriter log)
@@ -27,8 +28,8 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
             var treks = trekTable.Where(w => w.RowKey == trekId).ToList();
 
             return treks.Count != 1
-                ? req.CreateResponse(HttpStatusCode.NotFound)
-                : req.CreateResponseCamelCase(treks.First());
+                ? HttpRequestMessageHelpers.CreateResponse(HttpStatusCode.NotFound)
+                : HttpRequestMessageHelpers.CreateResponseCamelCase(treks.First());
         }
     }
 }

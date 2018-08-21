@@ -26,10 +26,10 @@ namespace TrekkingForCharity.Api.Read
         public int Status { get; set; }
 
         [JsonProperty]
-        public int WhenToStart { get; set; }
+        public long WhenToStart { get; set; }
 
         [JsonProperty]
-        public int? WhenStarted { get; set; }
+        public long? WhenStarted { get; set; }
 
         [JsonProperty]
         public Guid Id => Guid.Parse(this.RowKey);

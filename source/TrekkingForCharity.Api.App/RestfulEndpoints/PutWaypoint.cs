@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -27,44 +28,48 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
         [FunctionName("PutWaypoint")]
         public static async Task<HttpResponseMessage> Run(
             [HttpTrigger(AuthorizationLevel.Admin, "put", Route = "treks/{trekId}/waypoints/{waypointId}")]
-            HttpRequestMessage req,
+            HttpRequest req,
             [Table("trek")] CloudTable trekTable,
             [Table("waypoint")] CloudTable waypointTable,
             string trekId,
             string waypointId,
-            TraceWriter log)
+            TraceWriter log,
+            ExecutionContext context)
         {
             try
             {
-                var principleMaybe = req.Headers.GetCurrentPrinciple();
+                var config = context.GenerateConfigurationRoot();
+                var cert = config["Cert"];
+
+                var principleMaybe = req.Headers.GetCurrentPrinciple(cert);
                 if (principleMaybe.HasNoValue)
                 {
-                    return req.CreateResponse(HttpStatusCode.Forbidden);
+                    return HttpRequestMessageHelpers.CreateResponse(HttpStatusCode.Forbidden);
                 }
 
                 var principle = principleMaybe.Value;
                 var userId = principle.Claims.First(x => x.Type == "sub").Value;
 
-                var jsonContent = await req.Content.ReadAsStringAsync();
+                var jsonContent = await req.ReadAsStringAsync();
                 var cmd = JsonConvert.DeserializeObject<UpdateWaypointCommand>(jsonContent);
 
                 var validator = new UpdateWaypointCommandValidator();
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
                 {
-                    return req.CreateApiErrorResponseFromValidateResults(validationResult);
+                    return HttpRequestMessageHelpers.CreateApiErrorResponseFromValidateResults(validationResult);
                 }
 
                 var trekResult = await trekTable.RetrieveWithResult<Trek>(userId, trekId);
                 if (trekResult.IsFailure)
                 {
-                    return req.CreateResponse(HttpStatusCode.NotFound);
+                    return HttpRequestMessageHelpers.CreateResponse(HttpStatusCode.NotFound);
                 }
 
                 var result = await waypointTable.RetrieveWithResult<Waypoint>(trekId, waypointId);
                 if (result.IsFailure)
                 {
-                    return req.CreateApiErrorResponseWithSingleValidationError("TrekId", ErrorCodes.TrekNotFound,
+                    return HttpRequestMessageHelpers.CreateApiErrorResponseWithSingleValidationError("TrekId", ErrorCodes.TrekNotFound,
                         $"Trek with Id {trekId} not found");
                 }
 
@@ -77,16 +82,16 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
 
                 if (createResult.IsFailure)
                 {
-                    return req.CreateApiErrorResponse(
+                    return HttpRequestMessageHelpers.CreateApiErrorResponse(
                         ErrorCodes.Creation, "Something went wrong when trying to update the trek");
                 }
 
-                return req.CreateSuccessResponseMessage(waypoint.ToRead());
+                return HttpRequestMessageHelpers.CreateSuccessResponseMessage(waypoint.ToRead());
             }
             catch (Exception ex)
             {
                 log.Error(ex.Message, ex);
-                return req.CreateResponse(HttpStatusCode.InternalServerError);
+                return HttpRequestMessageHelpers.CreateResponse(HttpStatusCode.InternalServerError);
             }
         }
     }

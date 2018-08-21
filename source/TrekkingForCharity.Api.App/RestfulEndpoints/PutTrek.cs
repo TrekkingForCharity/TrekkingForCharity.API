@@ -9,11 +9,13 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
+using Slugify;
 using TrekkingForCharity.Api.App.Helpers;
 using TrekkingForCharity.Api.Core.Constants;
 using TrekkingForCharity.Api.Write.Commands;
@@ -26,36 +28,40 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
     {
         [FunctionName("PutTrek")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Admin, "put", Route = "treks/{trekId}")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Admin, "put", Route = "treks/{trekId}")] HttpRequest req,
             [Table("trek", Connection = "")] CloudTable trekTable,
             string trekId,
-            TraceWriter log)
+            TraceWriter log,
+            ExecutionContext context)
         {
             try
             {
-                var principleMaybe = req.Headers.GetCurrentPrinciple();
+                var config = context.GenerateConfigurationRoot();
+                var cert = config["Cert"];
+
+                var principleMaybe = req.Headers.GetCurrentPrinciple(cert);
                 if (principleMaybe.HasNoValue)
                 {
-                    return req.CreateResponse(HttpStatusCode.Forbidden);
+                    return HttpRequestMessageHelpers.CreateResponse(HttpStatusCode.Forbidden);
                 }
 
                 var principle = principleMaybe.Value;
                 var userId = principle.Claims.First(x => x.Type == "sub").Value;
 
-                var jsonContent = await req.Content.ReadAsStringAsync();
+                var jsonContent = await req.ReadAsStringAsync();
                 var cmd = JsonConvert.DeserializeObject<UpdateTrekCommand>(jsonContent);
 
                 var validator = new UpdateTrekCommandValidator();
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
                 {
-                    return req.CreateApiErrorResponseFromValidateResults(validationResult);
+                    return HttpRequestMessageHelpers.CreateApiErrorResponseFromValidateResults(validationResult);
                 }
 
                 var result = await trekTable.RetrieveWithResult<Trek>(userId, trekId);
                 if (result.IsFailure)
                 {
-                    return req.CreateApiErrorResponseWithSingleValidationError("TrekId", ErrorCodes.TrekNotFound,
+                    return HttpRequestMessageHelpers.CreateApiErrorResponseWithSingleValidationError("TrekId", ErrorCodes.TrekNotFound,
                         $"Trek with Id {trekId} not found");
                 }
 
@@ -67,16 +73,18 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
 
                 if (updateResult.IsFailure)
                 {
-                    return req.CreateApiErrorResponse(
+                    return HttpRequestMessageHelpers.CreateApiErrorResponse(
                         ErrorCodes.Creation, "Something went wrong when trying to update the trek");
                 }
 
-                return req.CreateSuccessResponseMessage(trek.ToRead());
+                var slugHelper = new SlugHelper();
+
+                return HttpRequestMessageHelpers.CreateSuccessResponseMessage(trek.ToRead(slugHelper));
             }
             catch (Exception ex)
             {
                 log.Error(ex.Message, ex);
-                return req.CreateResponse(HttpStatusCode.InternalServerError);
+                return HttpRequestMessageHelpers.CreateResponse(HttpStatusCode.InternalServerError);
             }
         }
     }

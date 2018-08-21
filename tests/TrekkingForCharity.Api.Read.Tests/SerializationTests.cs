@@ -15,8 +15,8 @@ namespace TrekkingForCharity.Api.Read.Tests
                 RowKey = Guid.NewGuid().ToString(),
             };
             var serializedObject = JsonConvert.SerializeObject(trek).ToLower();
-            Assert.False(serializedObject.Contains("partitionkey"));
-            Assert.False(serializedObject.Contains("rowkey"));
+            Assert.DoesNotContain("partitionkey", serializedObject);
+            Assert.DoesNotContain("rowkey", serializedObject);
         }
 
         [Fact]
@@ -28,8 +28,8 @@ namespace TrekkingForCharity.Api.Read.Tests
                 RowKey = 1.ToString(),
             };
             var serializedObject = JsonConvert.SerializeObject(update).ToLower();
-            Assert.False(serializedObject.Contains("partitionkey"));
-            Assert.False(serializedObject.Contains("rowkey"));
+            Assert.DoesNotContain("partitionkey", serializedObject);
+            Assert.DoesNotContain("rowkey", serializedObject);
         }
 
         [Fact]
@@ -41,8 +41,8 @@ namespace TrekkingForCharity.Api.Read.Tests
                 RowKey = 1.ToString(),
             };
             var serializedObject = JsonConvert.SerializeObject(waypoint).ToLower();
-            Assert.False(serializedObject.Contains("partitionkey"));
-            Assert.False(serializedObject.Contains("rowkey"));
+            Assert.DoesNotContain("partitionkey", serializedObject);
+            Assert.DoesNotContain("rowkey", serializedObject);
         }
     }
 }

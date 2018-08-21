@@ -6,6 +6,7 @@
 
 using System.Linq;
 using System.Net.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -19,14 +20,14 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
         [FunctionName("GetWaypointsForTrek")]
         public static HttpResponseMessage Run(
             [HttpTrigger(AuthorizationLevel.Admin, "get", Route = "treks/{trekId}/waypoints")]
-            HttpRequestMessage req,
+            HttpRequest req,
             [Table("waypoint")] IQueryable<Waypoint> waypointTable,
             string trekId,
             TraceWriter log)
         {
             var waypoints = waypointTable.Where(w => w.PartitionKey == trekId).ToList();
 
-            return req.CreateResponseCamelCase(waypoints);
+            return HttpRequestMessageHelpers.CreateResponseCamelCase(waypoints);
         }
     }
 }

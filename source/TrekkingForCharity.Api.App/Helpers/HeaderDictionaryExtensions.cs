@@ -5,30 +5,31 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System;
-using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using MaybeMonad;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 
 namespace TrekkingForCharity.Api.App.Helpers
 {
     /// <summary>
-    /// The http request headers extensions.
+    ///     The http request headers extensions.
     /// </summary>
-    public static class HttpRequestHeadersExtensions
+    public static class HeaderDictionaryExtensions
     {
-        public static Maybe<ClaimsPrincipal> GetCurrentPrinciple(this HttpRequestHeaders httpRequestHeaders)
+        public static Maybe<ClaimsPrincipal> GetCurrentPrinciple(
+            this IHeaderDictionary headerDictionary,
+            string certData)
         {
-            if (!httpRequestHeaders.Contains("Authorization"))
+            if (string.IsNullOrWhiteSpace(headerDictionary["Authorization"]))
             {
                 return Maybe<ClaimsPrincipal>.Nothing;
             }
 
-            var headerValue = httpRequestHeaders.GetValues("Authorization");
+            var headerValue = headerDictionary["Authorization"];
             var bearerValue =
                 headerValue.FirstOrDefault(v => v.StartsWith("Bearer ", StringComparison.InvariantCultureIgnoreCase)) ??
                 string.Empty;
@@ -39,17 +40,17 @@ namespace TrekkingForCharity.Api.App.Helpers
 
             var bearerToken = bearerValue.Split(' ')[1];
 
-            return ValidateToken(bearerToken);
+            return ValidateToken(bearerToken, certData);
         }
 
         /// <summary>
-        /// The generate certificate.
+        ///     The generate certificate.
         /// </summary>
         /// <param name="cert">
-        /// The cert.
+        ///     The cert.
         /// </param>
         /// <returns>
-        /// The <see cref="X509Certificate2"/>.
+        ///     The <see cref="X509Certificate2" />.
         /// </returns>
         private static X509Certificate2 GenerateCertificate(string cert)
         {
@@ -65,15 +66,16 @@ namespace TrekkingForCharity.Api.App.Helpers
         }
 
         /// <summary>
-        /// The validate token.
+        ///     The validate token.
         /// </summary>
         /// <param name="jwtToken">
-        /// The jwt token.
+        ///     The jwt token.
         /// </param>
+        /// <param name="certData">The bas64 string</param>
         /// <returns>
-        /// The <see cref="ClaimsPrincipal"/>.
+        ///     The <see cref="ClaimsPrincipal" />.
         /// </returns>
-        private static Maybe<ClaimsPrincipal> ValidateToken(string jwtToken)
+        private static Maybe<ClaimsPrincipal> ValidateToken(string jwtToken, string certData)
         {
             var handler = new JwtSecurityTokenHandler();
 
@@ -84,7 +86,7 @@ namespace TrekkingForCharity.Api.App.Helpers
 
             handler.InboundClaimTypeMap.Clear();
 
-            var cert = new X509SecurityKey(GenerateCertificate(ConfigurationManager.AppSettings["Cert"]));
+            var cert = new X509SecurityKey(GenerateCertificate(certData));
 
             try
             {

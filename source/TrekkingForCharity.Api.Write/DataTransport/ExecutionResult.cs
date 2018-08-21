@@ -18,7 +18,7 @@ namespace TrekkingForCharity.Api.Write.DataTransport
         {
         }
 
-        private ExecutionResult(bool suceeded, dynamic successReference = null, string errorCode = null, string failMessage = null)
+        private ExecutionResult(bool suceeded, object successReference = null, string errorCode = null, string failMessage = null)
         {
             this.FailMessage = suceeded ? string.Empty : failMessage ?? string.Empty;
             this.ErrorCode = suceeded ? string.Empty : errorCode ?? string.Empty;
@@ -57,7 +57,7 @@ namespace TrekkingForCharity.Api.Write.DataTransport
             return new ExecutionResult();
         }
 
-        public static ExecutionResult CreateSuccessfulExecutionResult(dynamic successReference)
+        public static ExecutionResult CreateSuccessfulExecutionResult(object successReference)
         {
             return new ExecutionResult(true, successReference);
         }
