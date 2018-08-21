@@ -9,9 +9,9 @@ using TrekkingForCharity.Api.Write.Commands;
 using TrekkingForCharity.Api.Write.CommandValidators;
 using Xunit;
 
-namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
+namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
 {
-    public class UpdateWaypointCommandValidatorTests
+    public class CreateUpdateCommandValidatorTests
     {
         [Theory]
         [InlineData(23, 128)]
@@ -22,12 +22,11 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
         [InlineData(-90, -180)]
         public void ShouldNotErrorWhenModelIsValid(double lat, double lng)
         {
-            var validator = new UpdateWaypointCommandValidator();
-            var command = new UpdateWaypointCommand
+            var validator = new CreateUpdateCommandValidator();
+            var command = new CreateUpdateCommand
             {
                 Lat = lat,
-                Lng = lng,
-                WhenToReach = 1
+                Lng = lng
             };
             var result = validator.Validate(command);
             Assert.True(result.IsValid);
@@ -39,12 +38,11 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
         [InlineData(181)]
         public void ShouldErrorWhenLngIsNoInRange(double lng)
         {
-            var validator = new UpdateWaypointCommandValidator();
-            var command = new UpdateWaypointCommand
+            var validator = new CreateUpdateCommandValidator();
+            var command = new CreateUpdateCommand
             {
                 Lat = 0,
-                Lng = lng,
-                WhenToReach = 1
+                Lng = lng
             };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
@@ -56,12 +54,11 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
         [InlineData(91)]
         public void ShouldErrorWhenLatIsNoInRange(double lat)
         {
-            var validator = new UpdateWaypointCommandValidator();
-            var command = new UpdateWaypointCommand
+            var validator = new CreateUpdateCommandValidator();
+            var command = new CreateUpdateCommand
             {
                 Lat = lat,
-                Lng = 0,
-                WhenToReach = 1
+                Lng = 0
             };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);

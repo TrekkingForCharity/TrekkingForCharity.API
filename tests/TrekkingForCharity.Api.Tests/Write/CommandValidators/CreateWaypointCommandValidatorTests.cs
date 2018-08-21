@@ -9,22 +9,23 @@ using TrekkingForCharity.Api.Write.Commands;
 using TrekkingForCharity.Api.Write.CommandValidators;
 using Xunit;
 
-namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
+namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
 {
-    public class CreateUpdateCommandValidatorTests
+    public class CreateWaypointCommandValidatorTests
     {
         [Theory]
-        [InlineData(23, 128)]
-        [InlineData(-23, 128)]
-        [InlineData(23, -128)]
-        [InlineData(-23, -128)]
-        [InlineData(90, 180)]
-        [InlineData(-90, -180)]
-        public void ShouldNotErrorWhenModelIsValid(double lat, double lng)
+        [InlineData("test1", 23, 128)]
+        [InlineData("test2", -23, 128)]
+        [InlineData("test3", 23, -128)]
+        [InlineData("test4", -23, -128)]
+        [InlineData("test5", 90, 180)]
+        [InlineData("test6", -90, -180)]
+        public void ShouldNotErrorWhenModelIsValid(string name, double lat, double lng)
         {
-            var validator = new CreateUpdateCommandValidator();
-            var command = new CreateUpdateCommand
+            var validator = new CreateWaypointCommandValidator();
+            var command = new CreateWaypointCommand
             {
+                Name = name,
                 Lat = lat,
                 Lng = lng
             };
@@ -38,8 +39,8 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
         [InlineData(181)]
         public void ShouldErrorWhenLngIsNoInRange(double lng)
         {
-            var validator = new CreateUpdateCommandValidator();
-            var command = new CreateUpdateCommand
+            var validator = new CreateWaypointCommandValidator();
+            var command = new CreateWaypointCommand
             {
                 Lat = 0,
                 Lng = lng
@@ -54,8 +55,8 @@ namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
         [InlineData(91)]
         public void ShouldErrorWhenLatIsNoInRange(double lat)
         {
-            var validator = new CreateUpdateCommandValidator();
-            var command = new CreateUpdateCommand
+            var validator = new CreateWaypointCommandValidator();
+            var command = new CreateWaypointCommand
             {
                 Lat = lat,
                 Lng = 0

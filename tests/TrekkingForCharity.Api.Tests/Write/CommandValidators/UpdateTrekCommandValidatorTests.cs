@@ -9,7 +9,7 @@ using TrekkingForCharity.Api.Write.Commands;
 using TrekkingForCharity.Api.Write.CommandValidators;
 using Xunit;
 
-namespace TrekkingForCharity.Api.Write.Tests.CommandValidators
+namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
 {
     public class UpdateTrekCommandValidatorTests
     {

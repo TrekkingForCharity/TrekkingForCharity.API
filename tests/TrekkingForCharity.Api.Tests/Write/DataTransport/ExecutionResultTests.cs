@@ -8,7 +8,7 @@ using System.Linq;
 using TrekkingForCharity.Api.Write.DataTransport;
 using Xunit;
 
-namespace TrekkingForCharity.Api.Write.Tests.DataTransport
+namespace TrekkingForCharity.Api.Tests.Write.DataTransport
 {
     public class ExecutionResultTests
     {

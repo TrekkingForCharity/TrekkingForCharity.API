@@ -1,8 +1,9 @@
 using System;
 using Newtonsoft.Json;
 using Xunit;
+using TrekkingForCharity.Api.Read;
 
-namespace TrekkingForCharity.Api.Read.Tests
+namespace TrekkingForCharity.Api.Tests.Read
 {
     public class SerializationTests
     {

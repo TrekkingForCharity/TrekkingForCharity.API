@@ -10,7 +10,7 @@ using TrekkingForCharity.Api.Core.Constants;
 using TrekkingForCharity.Api.Write.Helpers;
 using Xunit;
 
-namespace TrekkingForCharity.Api.Write.Tests.Helpers
+namespace TrekkingForCharity.Api.Tests.Write.Helpers
 {
     public class ValidationExtensionsTests
     {

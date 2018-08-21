@@ -1,4 +1,5 @@
 #tool "nuget:?package=GitVersion.CommandLine"
+#addin nuget:?package=Cake.Coverlet
 
 var target = Argument("target", "Default");
 
@@ -11,6 +12,7 @@ var clientPath = buildPath + Directory("client");
 var testPath = buildPath + Directory("test");
 
 string version;
+string branch;
 
 Task("__Clean")
   .Does(() => {
@@ -49,20 +51,27 @@ Task("__NugetRestore")
   });
 Task("__Test")
   .Does(() => {
-    var projectFiles = GetFiles("../tests/**/*.csproj");
-    foreach(var file in projectFiles) {
-      var testFilePath = string.Format("{0}.trx", MakeAbsolute(testPath + File(file.GetFilenameWithoutExtension().ToString())).FullPath);
-        var settings = new DotNetCoreTestSettings {
-          Configuration = "Release",
-          Logger = string.Format("trx;LogFileName={0}", testFilePath)
-        };
+    var testFilePath = MakeAbsolute(File("./build-artifacts/test/xunit-report.xml"));
+    
+    var testSettings = new DotNetCoreTestSettings {
+      Configuration = "Release",
+      Logger = string.Format("trx;LogFileName={0}", MakeAbsolute(File("./build-artifacts/test/xunit-report.xml")))
+    };
 
-        DotNetCoreTest(file.FullPath, settings);
-        if (AppVeyor.IsRunningOnAppVeyor) {
-          AppVeyor.UploadTestResults(testFilePath, AppVeyorTestResultsType.XUnit);
-        }
+    var coveletSettings = new CoverletSettings {
+        CollectCoverage = true,
+        CoverletOutputFormat = CoverletOutputFormat.opencover,
+        CoverletOutputDirectory = Directory("./build-artifacts/test/"),
+        CoverletOutputName = "opencover.xml"
+    };
+
+    DotNetCoreTest("../tests/TrekkingForCharity.Api.Tests/TrekkingForCharity.Api.Tests.csproj", testSettings, coveletSettings);
+
+    if (AppVeyor.IsRunningOnAppVeyor) {
+      AppVeyor.UploadTestResults(testFilePath, AppVeyorTestResultsType.XUnit);
     }
   });
+
 Task("__Publish")
   .Does(() => {
     
