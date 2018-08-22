@@ -15,7 +15,7 @@ var releasePath = buildPath + Directory("release");
 var clientPath = buildPath + Directory("client");
 var testPath = buildPath + Directory("test");
 
-string version;
+string version, branch;
 
 var codecovToken = EnvironmentVariable("CODECOV_TOKEN");
 var sonarCloudToken = EnvironmentVariable("SONARCLOUD_TOKEN");
@@ -38,6 +38,7 @@ Task("__Versioning")
   .Does(() => {
     var gitVersion = GitVersion();
     version = gitVersion.NuGetVersion;
+    branch = gitVersion.BranchName;
     
     var files = GetFiles("../source/**/*.csproj");
     foreach (var file in files) {
@@ -110,7 +111,8 @@ Task("__ProcessDataForThirdParties")
         Login = sonarCloudToken,        
         Verbose = true,
         Organization = "trekking-for-charity",
-        OpenCoverReportsPath = MakeAbsolute(File("./build-artifacts/test/opencover.xml").ToString())
+        OpenCoverReportsPath = MakeAbsolute(File("./build-artifacts/test/opencover.xml")).ToString(),
+        Branch = branch
       };
       Sonar(ctx => ctx.DotNetCoreMSBuild("../TrekkingForCharity.Api.sln"), settings);
 
