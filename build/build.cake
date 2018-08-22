@@ -1,5 +1,9 @@
 #tool "nuget:?package=GitVersion.CommandLine"
 #addin nuget:?package=Cake.Coverlet
+#tool nuget:?package=Codecov
+#addin nuget:?package=Cake.Codecov
+#tool nuget:?package=MSBuild.SonarQube.Runner.Tool
+#addin nuget:?package=Cake.Sonar
 
 var target = Argument("target", "Default");
 
@@ -12,7 +16,9 @@ var clientPath = buildPath + Directory("client");
 var testPath = buildPath + Directory("test");
 
 string version;
-string branch;
+
+var codecovToken = EnvironmentVariable("CODECOV_TOKEN");
+var sonarCloudToken = EnvironmentVariable("SONARCLOUD_TOKEN");
 
 Task("__Clean")
   .Does(() => {
@@ -93,6 +99,21 @@ Task("__Package")
         AppVeyor.UploadArtifact(releasePath + File("TrekkingForCharity.Api.App.zip"));        
       }
   });
+Task("__ProcessDataForThirdParties")
+  .Does(() => {
+    if (AppVeyor.IsRunningOnAppVeyor) {
+      var settings = new SonarBeginSettings() {
+        Url = "https://sonarqube.com",
+        Key = "t4c-api",
+        Login = sonarCloudToken,        
+        Verbose = true
+      };
+      Sonar(ctx => ctx.DotNetCoreMSBuild("../TrekkingForCharity.Api.sln"), settings);
+
+      Codecov("coverage.xml", codecovToken);
+    }
+  });
+
 
 Teardown(context => {
   var files = GetFiles("../source/**/*.csproj");
@@ -111,6 +132,7 @@ Task("Build")
   .IsDependentOn("__Test")
   .IsDependentOn("__Publish")
   .IsDependentOn("__Package")
+  .IsDependentOn("__ProcessDataForThirdParties")
   ;
 
 Task("Default")
