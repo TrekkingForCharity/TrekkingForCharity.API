@@ -108,7 +108,8 @@ Task("__ProcessDataForThirdParties")
         Url = "https://sonarcloud.io",
         Key = "t4c-api",
         Login = sonarCloudToken,        
-        Verbose = true
+        Verbose = true,
+        Organization = "trekking-for-charity"
       };
       Sonar(ctx => ctx.DotNetCoreMSBuild("../TrekkingForCharity.Api.sln"), settings);
 
