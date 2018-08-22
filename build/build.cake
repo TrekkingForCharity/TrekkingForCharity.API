@@ -105,7 +105,7 @@ Task("__ProcessDataForThirdParties")
   .Does(() => {
     if (AppVeyor.IsRunningOnAppVeyor) {
       var settings = new SonarBeginSettings() {
-        Url = "https://sonarqube.com",
+        Url = "https://sonarcloud.io",
         Key = "t4c-api",
         Login = sonarCloudToken,        
         Verbose = true
