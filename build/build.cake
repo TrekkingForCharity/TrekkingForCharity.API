@@ -109,11 +109,12 @@ Task("__ProcessDataForThirdParties")
         Key = "t4c-api",
         Login = sonarCloudToken,        
         Verbose = true,
-        Organization = "trekking-for-charity"
+        Organization = "trekking-for-charity",
+        OpenCoverReportsPath = MakeAbsolute(File("./build-artifacts/test/opencover.xml").ToString())
       };
       Sonar(ctx => ctx.DotNetCoreMSBuild("../TrekkingForCharity.Api.sln"), settings);
 
-      Codecov("coverage.xml", codecovToken);
+      Codecov("./build-artifacts/test/opencover.xml", codecovToken);
     }
   });
 
