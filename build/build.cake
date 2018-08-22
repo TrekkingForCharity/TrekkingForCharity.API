@@ -25,8 +25,10 @@ Task("__Clean")
       CleanDirectories(new DirectoryPath[]{
         buildPath
       });
-      CleanDirectories("../**/bin");
-      CleanDirectories("../**/obj");
+      CleanDirectories("../source/**/bin");
+      CleanDirectories("../source/**/obj");
+      CleanDirectories("../tests/**/bin");
+      CleanDirectories("../tests/**/obj");
 
       CreateDirectory(publishPath);
       CreateDirectory(releasePath);
