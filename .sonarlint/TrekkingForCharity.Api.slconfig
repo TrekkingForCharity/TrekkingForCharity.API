@@ -1,0 +1,14 @@
+{
+  "ServerUri": "https://sonarcloud.io/",
+  "Organization": {
+    "Key": "trekking-for-charity",
+    "Name": "trekking-for-charity"
+  },
+  "ProjectKey": "t4c-api",
+  "Profiles": {
+    "CSharp": {
+      "ProfileKey": "AWUaT-4pNgA6pXwBUjiL",
+      "ProfileTimestamp": "2018-07-18T11:34:53+01:00"
+    }
+  }
+}
