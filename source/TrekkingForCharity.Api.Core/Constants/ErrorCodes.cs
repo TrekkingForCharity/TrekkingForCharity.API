@@ -12,5 +12,6 @@ namespace TrekkingForCharity.Api.Core.Constants
         public const string Validation = "ERR-000001";
         public const string TrekNotFound = "ERR-000002";
         public static string Creation { get; set; }
+        public static string TrekNameInUse { get; set; }
     }
 }

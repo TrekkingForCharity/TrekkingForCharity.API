@@ -28,4 +28,13 @@
     <ProjectReference Include="..\TrekkingForCharity.Api.Core\TrekkingForCharity.Api.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="ResultMonad">
+      <HintPath>..\..\..\..\..\.nuget\packages\resultmonad\1.0.1\lib\netstandard2.0\ResultMonad.dll</HintPath>
+    </Reference>
+    <Reference Include="Slugify.Core">
+      <HintPath>..\..\..\..\..\.nuget\packages\slugify.core\2.3.0\lib\netstandard2.0\Slugify.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

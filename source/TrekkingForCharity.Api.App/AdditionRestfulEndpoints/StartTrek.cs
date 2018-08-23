@@ -16,6 +16,7 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Table;
 using TrekkingForCharity.Api.App.Helpers;
 using TrekkingForCharity.Api.Core.Constants;
+using TrekkingForCharity.Api.Core.Helpers;
 using TrekkingForCharity.Api.Write.Models;
 
 namespace TrekkingForCharity.Api.App.AdditionRestfulEndpoints

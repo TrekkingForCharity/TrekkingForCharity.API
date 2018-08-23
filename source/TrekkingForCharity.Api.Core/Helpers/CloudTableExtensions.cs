@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Table;
 using ResultMonad;
 
-namespace TrekkingForCharity.Api.App.Helpers
+namespace TrekkingForCharity.Api.Core.Helpers
 {
     public static class CloudTableExtensions
     {
