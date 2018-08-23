@@ -11,5 +11,6 @@ namespace TrekkingForCharity.Api.Core.Constants
         public const string UntypedError = "VAL-000000";
         public const string FieldIsRequired = "VAL-000001";
         public const string FieldNotInRange = "VAL-000002";
+        public static string TrekNameInUse { get; set; }
     }
 }

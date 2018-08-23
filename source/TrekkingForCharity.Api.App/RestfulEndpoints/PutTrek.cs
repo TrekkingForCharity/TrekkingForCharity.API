@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using Slugify;
 using TrekkingForCharity.Api.App.Helpers;
 using TrekkingForCharity.Api.Core.Constants;
+using TrekkingForCharity.Api.Core.Helpers;
 using TrekkingForCharity.Api.Write.Commands;
 using TrekkingForCharity.Api.Write.CommandValidators;
 using TrekkingForCharity.Api.Write.Models;
@@ -30,6 +31,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
         public static async Task<HttpResponseMessage> Run(
             [HttpTrigger(AuthorizationLevel.Admin, "put", Route = "treks/{trekId}")] HttpRequest req,
             [Table("trek", Connection = "")] CloudTable trekTable,
+            [Table("trek-slug", Connection = "")] CloudTable trekSlugTable,
             string trekId,
             TraceWriter log,
             ExecutionContext context)
@@ -45,13 +47,15 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                     return HttpRequestMessageHelpers.CreateResponse(HttpStatusCode.Forbidden);
                 }
 
+                var slugHelper = new SlugHelper();
+
                 var principle = principleMaybe.Value;
                 var userId = principle.Claims.First(x => x.Type == "sub").Value;
 
                 var jsonContent = await req.ReadAsStringAsync();
                 var cmd = JsonConvert.DeserializeObject<UpdateTrekCommand>(jsonContent);
 
-                var validator = new UpdateTrekCommandValidator();
+                var validator = new UpdateTrekCommandValidator(trekSlugTable, slugHelper);
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
                 {
@@ -77,7 +81,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                         ErrorCodes.Creation, "Something went wrong when trying to update the trek");
                 }
 
-                var slugHelper = new SlugHelper();
+                
 
                 return HttpRequestMessageHelpers.CreateSuccessResponseMessage(trek.ToRead(slugHelper));
             }

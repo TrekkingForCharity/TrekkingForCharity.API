@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using Slugify;
 using TrekkingForCharity.Api.App.Helpers;
 using TrekkingForCharity.Api.Core.Constants;
+using TrekkingForCharity.Api.Core.Helpers;
 using TrekkingForCharity.Api.Write.Commands;
 using TrekkingForCharity.Api.Write.CommandValidators;
 using TrekkingForCharity.Api.Write.Models;
@@ -51,7 +52,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                 var jsonContent = await req.ReadAsStringAsync();
                 var cmd = JsonConvert.DeserializeObject<CreateTrekCommand>(jsonContent);
 
-                var validator = new CreateTrekCommandValidator();
+                var validator = new CreateTrekCommandValidator(trekSlugTable);
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
                 {
@@ -61,6 +62,17 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                 await trekTable.CreateIfNotExistsAsync();
                 await trekSlugTable.CreateIfNotExistsAsync();
 
+                var slugify = new Slugify.SlugHelper();
+                var slug = slugify.GenerateSlug(cmd.Name);
+
+                var slugResult = await trekSlugTable.RetrieveWithResult<TrekSlug>(slug.First().ToString(), slug);
+
+                if (slugResult.IsSuccess)
+                {
+                    return HttpRequestMessageHelpers.CreateApiErrorResponse(
+                        ErrorCodes.TrekNameInUse, "The name is used by another trek");
+                }
+
                 var trek = new Trek(cmd.Name, cmd.Description, cmd.BannerImage, cmd.WhenToStart, userId);
 
                 var result = await trekTable.CreateEntity(trek);
@@ -69,9 +81,6 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                     return HttpRequestMessageHelpers.CreateApiErrorResponse(
                         ErrorCodes.Creation, "Something went wrong when trying to create the trek");
                 }
-
-                var slugify = new Slugify.SlugHelper();
-                var slug = slugify.GenerateSlug(cmd.Name);
 
                 var trekSlug = new TrekSlug(slug.First(), slug, $"{trek.PartitionKey}¬{trek.RowKey}");
                 result = await trekSlugTable.CreateEntity(trekSlug);

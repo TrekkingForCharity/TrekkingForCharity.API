@@ -17,6 +17,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 using TrekkingForCharity.Api.App.Helpers;
 using TrekkingForCharity.Api.Core.Constants;
+using TrekkingForCharity.Api.Core.Helpers;
 using TrekkingForCharity.Api.Read;
 using TrekkingForCharity.Api.Write.Commands;
 using TrekkingForCharity.Api.Write.CommandValidators;
