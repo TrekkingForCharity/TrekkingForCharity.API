@@ -23,9 +23,9 @@ namespace TrekkingForCharity.Api.Write.CommandValidators
     public class CreateTrekCommandValidator : AbstractValidator<CreateTrekCommand>
     {
         private readonly CloudTable _trekSlugTable;
-        private readonly SlugHelper _slugHelper;
+        private readonly ISlugHelper _slugHelper;
 
-        public CreateTrekCommandValidator(CloudTable trekSlugTable, SlugHelper slugHelper)
+        public CreateTrekCommandValidator(CloudTable trekSlugTable, ISlugHelper slugHelper)
         {
             this._trekSlugTable = trekSlugTable ?? throw new ArgumentNullException(nameof(trekSlugTable));
             this._slugHelper = slugHelper ?? throw new ArgumentNullException(nameof(slugHelper));

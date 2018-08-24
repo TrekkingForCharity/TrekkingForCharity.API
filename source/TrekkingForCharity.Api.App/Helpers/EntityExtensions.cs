@@ -15,7 +15,7 @@ namespace TrekkingForCharity.Api.App.Helpers
             var readWaypoint = new Read.Waypoint
             {
                 Lng = writeWaypoint.Lng,
-                Lat = writeWaypoint.Lng,
+                Lat = writeWaypoint.Lat,
                 PartitionKey = writeWaypoint.PartitionKey,
                 RowKey = writeWaypoint.RowKey,
                 WhenReached = writeWaypoint.WhenReached

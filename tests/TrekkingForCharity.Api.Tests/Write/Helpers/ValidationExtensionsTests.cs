@@ -15,7 +15,7 @@ namespace TrekkingForCharity.Api.Tests.Write.Helpers
     public class ValidationExtensionsTests
     {
         [Fact]
-        public void ShouldCreateExecutionResultWithValidationErrors()
+        public void Should_HaveValidationErrors_When_CreatedWithValidationFailure()
         {
             var validationResult = new ValidationResult();
             validationResult.Errors.Add(new ValidationFailure("Name", "ERR-001"));

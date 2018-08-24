@@ -24,12 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.WindowsAzure.Storage">
-      <HintPath>..\..\..\..\..\.nuget\packages\windowsazure.storage\8.6.0\lib\netstandard1.3\Microsoft.WindowsAzure.Storage.dll</HintPath>
-    </Reference>
-    <Reference Include="ResultMonad">
-      <HintPath>..\..\..\..\..\.nuget\packages\resultmonad\1.0.1\lib\netstandard2.0\ResultMonad.dll</HintPath>
-    </Reference>
+    <PackageReference Include="ResultMonad" Version="1.0.1" />
+    <PackageReference Include="WindowsAzure.Storage" Version="8.6.0" />
   </ItemGroup>
 
 </Project>

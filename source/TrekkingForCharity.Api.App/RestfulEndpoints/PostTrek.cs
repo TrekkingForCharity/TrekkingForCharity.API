@@ -49,10 +49,12 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                 var principle = principleMaybe.Value;
                 var userId = principle.Claims.First(x => x.Type == "sub").Value;
 
+                var slugifyHelper = new Slugify.SlugHelper();
+
                 var jsonContent = await req.ReadAsStringAsync();
                 var cmd = JsonConvert.DeserializeObject<CreateTrekCommand>(jsonContent);
 
-                var validator = new CreateTrekCommandValidator(trekSlugTable);
+                var validator = new CreateTrekCommandValidator(trekSlugTable, slugifyHelper);
                 var validationResult = await validator.ValidateAsync(cmd);
                 if (!validationResult.IsValid)
                 {
@@ -62,8 +64,7 @@ namespace TrekkingForCharity.Api.App.RestfulEndpoints
                 await trekTable.CreateIfNotExistsAsync();
                 await trekSlugTable.CreateIfNotExistsAsync();
 
-                var slugify = new Slugify.SlugHelper();
-                var slug = slugify.GenerateSlug(cmd.Name);
+                var slug = slugifyHelper.GenerateSlug(cmd.Name);
 
                 var slugResult = await trekSlugTable.RetrieveWithResult<TrekSlug>(slug.First().ToString(), slug);
 

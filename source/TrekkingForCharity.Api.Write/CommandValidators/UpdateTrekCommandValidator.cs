@@ -23,9 +23,9 @@ namespace TrekkingForCharity.Api.Write.CommandValidators
     public class UpdateTrekCommandValidator : AbstractValidator<UpdateTrekCommand>
     {
         private readonly CloudTable _trekSlugTable;
-        private readonly SlugHelper _slugHelper;
+        private readonly ISlugHelper _slugHelper;
 
-        public UpdateTrekCommandValidator(CloudTable trekSlugTable, SlugHelper slugHelper)
+        public UpdateTrekCommandValidator(CloudTable trekSlugTable, ISlugHelper slugHelper)
         {
             this._trekSlugTable = trekSlugTable ?? throw new ArgumentNullException(nameof(trekSlugTable));
             this._slugHelper = slugHelper ?? throw new ArgumentNullException(nameof(slugHelper));
@@ -35,6 +35,7 @@ namespace TrekkingForCharity.Api.Write.CommandValidators
                 .WithErrorCode(ValidationCodes.FieldIsRequired)
                 .CustomAsync(this.NameIsUnique);
             this.RuleFor(x => x.Description).NotEmpty().WithErrorCode(ValidationCodes.FieldIsRequired);
+            this.RuleFor(x => x.Id).NotEqual(Guid.Empty).WithErrorCode(ValidationCodes.FieldIsRequired);
         }
 
         private async Task NameIsUnique(string name, CustomContext context, CancellationToken cancellationToken)
@@ -44,17 +45,15 @@ namespace TrekkingForCharity.Api.Write.CommandValidators
             if (trekSlugResult.IsSuccess)
             {
                 var trekSlug = trekSlugResult.Value;
-                if (context.InstanceToValidate is UpdateTrekCommand command)
+                if (context.InstanceToValidate is UpdateTrekCommand command &&
+                    command.Id != Guid.Parse(trekSlug.TrekRef.Split('¬').First()))
                 {
-                    if (command.Id != Guid.Parse(trekSlug.TrekRef.Split('¬').First()))
-                    {
-                        var validationFailure =
-                            new ValidationFailure(context.PropertyName, "Trek name not unique")
-                            {
-                                ErrorCode = ValidationCodes.TrekNameInUse
-                            };
-                        context.AddFailure(validationFailure);
-                    }
+                    var validationFailure =
+                        new ValidationFailure(context.PropertyName, "Trek name not unique")
+                        {
+                            ErrorCode = ValidationCodes.TrekNameInUse
+                        };
+                    context.AddFailure(validationFailure);
                 }
             }
         }

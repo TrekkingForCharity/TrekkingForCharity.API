@@ -20,7 +20,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
         [InlineData("test4", -23, -128)]
         [InlineData("test5", 90, 180)]
         [InlineData("test6", -90, -180)]
-        public void ShouldNotErrorWhenModelIsValid(string name, double lat, double lng)
+        public void Should_BeValid_When_ModelIsComplete(string name, double lat, double lng)
         {
             var validator = new CreateWaypointCommandValidator();
             var command = new CreateWaypointCommand
@@ -37,7 +37,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
         [Theory]
         [InlineData(-181)]
         [InlineData(181)]
-        public void ShouldErrorWhenLngIsNoInRange(double lng)
+        public void Should_FailValidation_When_LngIsNotInRange(double lng)
         {
             var validator = new CreateWaypointCommandValidator();
             var command = new CreateWaypointCommand
@@ -53,7 +53,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
         [Theory]
         [InlineData(-91)]
         [InlineData(91)]
-        public void ShouldErrorWhenLatIsNoInRange(double lat)
+        public void Should_FailValidation_When_LatIsNotInRange(double lat)
         {
             var validator = new CreateWaypointCommandValidator();
             var command = new CreateWaypointCommand
