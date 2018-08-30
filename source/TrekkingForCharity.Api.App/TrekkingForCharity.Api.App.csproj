@@ -15,7 +15,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="CommandEndpoints\CreateUpdateCommandExecutor.cs" />
-    <Compile Remove="CommandEndpoints\CreateWaypointCommandExecutor.cs" />
     <Compile Remove="CommandEndpoints\DeleteWaypointCommandExecutor.cs" />
     <Compile Remove="CommandEndpoints\HitWaypointCommandExecutor.cs" />
     <Compile Remove="CommandEndpoints\StartTrekCommandExecutor.cs" />
@@ -65,8 +64,6 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CommandEndpoints\CreateUpdateCommandExecutor.cs" />
-    <None Include="CommandEndpoints\CreateWaypointCommandExecutor.cs" />
     <None Include="CommandEndpoints\DeleteWaypointCommandExecutor.cs" />
     <None Include="CommandEndpoints\HitWaypointCommandExecutor.cs" />
     <None Include="CommandEndpoints\StartTrekCommandExecutor.cs" />
