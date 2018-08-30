@@ -36,9 +36,8 @@ namespace TrekkingForCharity.Api.Write.Models
 
         public long? WhenStarted { get; set; }
 
-        public void UpdateBasicDetails(string name, string description, string bannerImage, long whenToStart)
+        public void UpdateBasicDetails(string description, string bannerImage, long whenToStart)
         {
-            this.Name = name;
             this.Description = description;
             this.WhenToStart = whenToStart;
             this.BannerImage = bannerImage;

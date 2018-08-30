@@ -6,62 +6,78 @@
 
 using System.Net;
 using System.Net.Http;
-using System.Text;
+using System.Threading.Tasks;
 using FluentValidation.Results;
 using Newtonsoft.Json;
-using TrekkingForCharity.Api.Write.DataTransport;
-using TrekkingForCharity.Api.Write.Helpers;
+using Newtonsoft.Json.Serialization;
+using ResultMonad;
+using TrekkingForCharity.Api.App.DataTransport;
+using TrekkingForCharity.Api.Core.CommandExecutors;
+using TrekkingForCharity.Api.Core.Commands;
 
 namespace TrekkingForCharity.Api.App.Helpers
 {
     public static class HttpRequestMessageHelpers
     {
-        public static HttpResponseMessage CreateApiErrorResponse(string apiErrorCode, string message)
+        public static async Task<TCommand> GetCommand<TCommand>(this HttpRequestMessage requestMessage)
+            where TCommand : ICommand
         {
-            var executionResult = ExecutionResult.CreateFailedExecutionResult(apiErrorCode, message);
-            return CreateResponseCamelCase(executionResult, HttpStatusCode.BadRequest);
+            var jsonContent = await requestMessage.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<TCommand>(jsonContent);
         }
 
-        public static HttpResponseMessage CreateApiErrorResponseWithSingleValidationError(
-            string property,
-            string errorCode, string message)
+        public static HttpResponseMessage CreateResponseMessageFromExecutionResult(
+            this HttpRequestMessage requestMessage, ResultWithError<ErrorData> result)
+        {
+            return result.IsSuccess
+                ? requestMessage.CreateEmptySuccessResponseMessage()
+                : requestMessage.CreateApiErrorResponse(result.Error);
+        }
+
+        public static HttpResponseMessage CreateResponseMessageFromExecutionResult<TCommandResult>(
+            this HttpRequestMessage requestMessage, Result<TCommandResult, ErrorData> result)
+        {
+            return result.IsSuccess
+                ? requestMessage.CreateSuccessResponseMessage(result.Value)
+                : requestMessage.CreateApiErrorResponse(result.Error);
+        }
+
+        public static HttpResponseMessage CreateApiErrorResponse(this HttpRequestMessage req, ErrorData errorData)
         {
             var executionResult =
-                ExecutionResult.CreateFailedExecutionResultWithSingleValidationError(property, errorCode, message);
-            return CreateResponseCamelCase(executionResult, (HttpStatusCode)422);
+                ExecutionResponse.CreateFailedExecutionResponse(errorData.ErrorCode, errorData.ErrorMessage);
+            return req.CreateResponseCamelCase(executionResult, HttpStatusCode.BadRequest);
         }
 
-        public static HttpResponseMessage CreateApiErrorResponseFromValidateResults(ValidationResult validationResult)
+        public static HttpResponseMessage CreateApiErrorResponseFromValidationResults(
+            this HttpRequestMessage req,
+            ValidationResult validationResult)
         {
-            var executionResult = validationResult.ToExecutionResult();
-            return CreateResponseCamelCase(executionResult, (HttpStatusCode)422);
+            var executionResult = validationResult.ToExecutionResponse();
+            return req.CreateResponseCamelCase(executionResult, (HttpStatusCode) 422);
         }
 
-        public static HttpResponseMessage CreateEmptySuccessResponseMessage()
+        public static HttpResponseMessage CreateEmptySuccessResponseMessage(this HttpRequestMessage req)
         {
-            var executionResult = ExecutionResult.CreateEmptySuccessfulExecutionResult();
-            return CreateResponseCamelCase(executionResult);
+            var executionResult = ExecutionResponse.CreateEmptySuccessfulExecutionResponse();
+            return req.CreateResponseCamelCase(executionResult);
         }
 
-        public static HttpResponseMessage CreateSuccessResponseMessage(object obj)
+        public static HttpResponseMessage CreateSuccessResponseMessage(this HttpRequestMessage req, object obj)
         {
-            var executionResult = ExecutionResult.CreateSuccessfulExecutionResult(obj);
-            return CreateResponseCamelCase(executionResult);
+            var executionResult = ExecutionResponse.CreateSuccessfulExecutionResponse(obj);
+            return req.CreateResponseCamelCase(executionResult);
         }
 
-        public static HttpResponseMessage CreateResponse(HttpStatusCode httpStatusCode)
-        {
-            return new HttpResponseMessage(httpStatusCode);
-        }
-
-        public static HttpResponseMessage CreateResponseCamelCase(
-            object obj,
+        public static HttpResponseMessage CreateResponseCamelCase(this HttpRequestMessage req, object obj,
             HttpStatusCode httpStatusCode = HttpStatusCode.OK)
         {
             return new HttpResponseMessage(httpStatusCode)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(obj), Encoding.UTF8,
-                    "application/json")
+                Content = new StringContent(JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                }))
             };
         }
     }

@@ -6,12 +6,8 @@
 
 using System;
 using System.Linq;
-using Microsoft.WindowsAzure.Storage.Table;
-using Moq;
-using Slugify;
 using TrekkingForCharity.Api.Write.Commands;
 using TrekkingForCharity.Api.Write.CommandValidators;
-using TrekkingForCharity.Api.Write.Models;
 using Xunit;
 
 namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
@@ -22,18 +18,10 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
         public void Should_BeValid_When_ModelIsCompleteAndNameHasNotChanged()
         {
             var trekId = Guid.NewGuid();
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://test.example.com"));
-            trekSlugTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
-            {
-                Result = new TrekSlug('t', "trek-name", $"{trekId}¬userId")
-            });
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns("trek-name");
 
-            var validator = new UpdateTrekCommandValidator(trekSlugTable.Object, slugHelper.Object);
+            var validator = new UpdateTrekCommandValidator();
             var command = new UpdateTrekCommand
             {
-                Name = "Trek Name",
                 Description = "Trek Description",
                 Id = trekId
             };
@@ -45,18 +33,9 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
         [Fact]
         public void Should_BeValid_When_ModelIsCompleteAndNameIsNotInUse()
         {
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://test.example.com"));
-            trekSlugTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
-            {
-                Result = null
-            });
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
-
-            var validator = new UpdateTrekCommandValidator(trekSlugTable.Object, slugHelper.Object);
+            var validator = new UpdateTrekCommandValidator();
             var command = new UpdateTrekCommand
             {
-                Name = "Trek Name",
                 Description = "Trek Description",
                 Id = Guid.NewGuid()
             };
@@ -68,16 +47,8 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
         [Fact]
         public void Should_FailValidation_When_DescriptionIsEmpty()
         {
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://test.example.com"));
-            trekSlugTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
-            {
-                Result = new TrekSlug('t', "trek-name", $"{Guid.NewGuid()}¬userId")
-            });
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
-
-            var validator = new UpdateTrekCommandValidator(trekSlugTable.Object, slugHelper.Object);
-            var command = new UpdateTrekCommand {Name = "Trek Name", Description = string.Empty};
+            var validator = new UpdateTrekCommandValidator();
+            var command = new UpdateTrekCommand {Description = string.Empty};
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
             Assert.Contains(result.Errors, o => o.PropertyName == "Description");
@@ -86,16 +57,8 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
         [Fact]
         public void Should_FailValidation_When_DescriptionIsNull()
         {
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://test.example.com"));
-            trekSlugTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
-            {
-                Result = new TrekSlug('t', "trek-name", $"{Guid.NewGuid()}¬userId")
-            });
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
-
-            var validator = new UpdateTrekCommandValidator(trekSlugTable.Object, slugHelper.Object);
-            var command = new UpdateTrekCommand {Name = "Trek Name"};
+            var validator = new UpdateTrekCommandValidator();
+            var command = new UpdateTrekCommand();
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
             Assert.Contains(result.Errors, o => o.PropertyName == "Description");
@@ -104,55 +67,11 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
         [Fact]
         public void Should_FailValidation_When_IdisEmptyGuid()
         {
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://test.example.com"));
-            trekSlugTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
-            {
-                Result = new TrekSlug('t', "trek-name", $"{Guid.NewGuid()}¬userId")
-            });
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
-
-            var validator = new UpdateTrekCommandValidator(trekSlugTable.Object, slugHelper.Object);
-            var command = new UpdateTrekCommand {Name = "Trek Name", Description = "Trek Description", Id = Guid.Empty};
+            var validator = new UpdateTrekCommandValidator();
+            var command = new UpdateTrekCommand {Description = "Trek Description", Id = Guid.Empty};
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
             Assert.Contains(result.Errors, o => o.PropertyName == "Id");
-        }
-
-        [Fact]
-        public void Should_FailValidation_When_NameIsEmpty()
-        {
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://test.example.com"));
-            trekSlugTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
-            {
-                Result = new TrekSlug('t', "trek-name", $"{Guid.NewGuid()}¬userId")
-            });
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
-
-            var validator = new UpdateTrekCommandValidator(trekSlugTable.Object, slugHelper.Object);
-            var command = new UpdateTrekCommand {Description = "Trek Description", Name = string.Empty};
-            var result = validator.Validate(command);
-            Assert.False(result.IsValid);
-            Assert.Contains(result.Errors, o => o.PropertyName == "Name");
-        }
-
-        [Fact]
-        public void Should_FailValidation_When_NameIsNull()
-        {
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://test.example.com"));
-            trekSlugTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
-            {
-                Result = new TrekSlug('t', "trek-name", $"{Guid.NewGuid()}¬userId")
-            });
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
-
-            var validator = new UpdateTrekCommandValidator(trekSlugTable.Object, slugHelper.Object);
-            var command = new UpdateTrekCommand {Description = "Trek Description"};
-            var result = validator.Validate(command);
-            Assert.False(result.IsValid);
-            Assert.Contains(result.Errors, o => o.PropertyName == "Name");
         }
     }
 }

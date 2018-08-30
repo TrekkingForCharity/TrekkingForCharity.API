@@ -10,6 +10,11 @@ namespace TrekkingForCharity.Api.Write.Models
 {
     public class TrekSlug : TableEntity
     {
+        public TrekSlug()
+        {
+            
+        }
+
         public TrekSlug(char initial, string slug, string trekRef)
         {
             this.PartitionKey = initial.ToString();

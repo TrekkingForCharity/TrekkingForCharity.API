@@ -6,8 +6,8 @@
 
 using System.Linq;
 using FluentValidation.Results;
+using TrekkingForCharity.Api.App.Helpers;
 using TrekkingForCharity.Api.Core.Constants;
-using TrekkingForCharity.Api.Write.Helpers;
 using Xunit;
 
 namespace TrekkingForCharity.Api.Tests.Write.Helpers
@@ -19,7 +19,7 @@ namespace TrekkingForCharity.Api.Tests.Write.Helpers
         {
             var validationResult = new ValidationResult();
             validationResult.Errors.Add(new ValidationFailure("Name", "ERR-001"));
-            var er = validationResult.ToExecutionResult();
+            var er = validationResult.ToExecutionResponse();
             Assert.Equal(ErrorCodes.Validation, er.ErrorCode);
             Assert.Equal("validation", er.FailMessage);
             Assert.False(er.Success);

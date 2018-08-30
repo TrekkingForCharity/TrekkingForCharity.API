@@ -11,7 +11,11 @@ namespace TrekkingForCharity.Api.Core.Constants
         public const string UntypedError = "ERR-000000";
         public const string Validation = "ERR-000001";
         public const string TrekNotFound = "ERR-000002";
-        public static string Creation { get; set; }
-        public static string TrekNameInUse { get; set; }
+        public const string Creation = "ERR-000003";
+        public const string TrekNameInUse = "ERR-000004";
+        public const string WaypointNotFound = "ERR-000005";
+        public const string NotAuthenticated = "ERR-000006";
+        public const string CommandIsNotSet = "ERR-000007";
+        public const string Deletion = "ERR-000008";
     }
 }

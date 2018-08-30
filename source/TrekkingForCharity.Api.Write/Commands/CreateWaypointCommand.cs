@@ -5,10 +5,11 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System;
+using TrekkingForCharity.Api.Core.Commands;
 
 namespace TrekkingForCharity.Api.Write.Commands
 {
-    public class CreateWaypointCommand
+    public class CreateWaypointCommand : ICommand
     {
         public string Name { get; set; }
 
@@ -17,5 +18,6 @@ namespace TrekkingForCharity.Api.Write.Commands
         public double Lat { get; set; }
 
         public int WhenToReach { get; set; }
+        public Guid TrekId { get; set; }
     }
 }

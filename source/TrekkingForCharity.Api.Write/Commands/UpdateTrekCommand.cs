@@ -5,19 +5,19 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System;
+using TrekkingForCharity.Api.Core.Commands;
 
 namespace TrekkingForCharity.Api.Write.Commands
 {
-    public class UpdateTrekCommand
+    public class UpdateTrekCommand : ICommand
     {
         public Guid Id { get; set; }
-
-        public string Name { get; set; }
 
         public string Description { get; set; }
 
         public int WhenToStart { get; set; }
 
         public string BannerImage { get; set; }
+        public Guid TrekId { get; set; }
     }
 }
