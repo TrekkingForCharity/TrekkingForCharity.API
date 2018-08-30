@@ -54,7 +54,7 @@ namespace TrekkingForCharity.Api.App.Helpers
             ValidationResult validationResult)
         {
             var executionResult = validationResult.ToExecutionResponse();
-            return req.CreateResponseCamelCase(executionResult, (HttpStatusCode) 422);
+            return req.CreateResponseCamelCase(executionResult, (HttpStatusCode)422);
         }
 
         public static HttpResponseMessage CreateEmptySuccessResponseMessage(this HttpRequestMessage req)

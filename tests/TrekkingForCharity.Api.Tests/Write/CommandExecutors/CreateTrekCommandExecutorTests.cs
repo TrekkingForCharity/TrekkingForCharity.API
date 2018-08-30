@@ -27,71 +27,6 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
     public class CreateTrekCommandExecutorTests
     {
         [Fact]
-        public void Should_GenerateExceptions_When_ContrustorArgumentsAreNull()
-        {
-            var ctor = typeof(CreateTrekCommandExecutor).GetConstructors().First();
-            ctor.TestConstructor();
-        }
-
-        [Fact]
-        public async Task Should_FailToCreateTrek_When_CommandIsInvalid()
-        {
-            var validator = new Mock<IValidator<CreateTrekCommand>>();
-            validator.Setup(x => x.ValidateAsync(It.IsAny<CreateTrekCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => new ValidationResult(new List<ValidationFailure>
-                {
-                    new ValidationFailure("prop", "error")
-                }));
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
-            
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
-            var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
-
-            var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
-
-            var
-                executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
-                    trekTable.Object, currentUserAccessor.Object);
-
-            var cmd = new CreateTrekCommand();
-
-            var validationResult = await executor.ValidateAndSetCommand(cmd);
-            Assert.False(validationResult.IsValid);
-
-            var executionResult = await executor.Execute();
-
-            Assert.True(executionResult.IsFailure);
-            Assert.Equal(ErrorCodes.Validation, executionResult.Error.ErrorCode);
-        }
-
-        [Fact]
-        public async Task Should_FailToCreateTrek_When_CommandIsNotSet()
-        {
-            var validator = new Mock<IValidator<CreateTrekCommand>>();
-            
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
-            
-
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
-            var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
-            
-            var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
-
-            var
-                executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
-                    trekTable.Object, currentUserAccessor.Object);
-
-            var executionResult = await executor.Execute();
-
-            Assert.True(executionResult.IsFailure);
-            Assert.Equal(ErrorCodes.CommandIsNotSet, executionResult.Error.ErrorCode);
-        }
-
-        [Fact]
         public async Task Should_CreateTrek_When_CommandIsValid()
         {
             var validator = new Mock<IValidator<CreateTrekCommand>>();
@@ -127,19 +62,22 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
         }
 
         [Fact]
-        public async Task Should_GenerateAuthError_When_NoUserIsPresent()
+        public async Task Should_FailToCreateTrek_When_CommandIsInvalid()
         {
             var validator = new Mock<IValidator<CreateTrekCommand>>();
             validator.Setup(x => x.ValidateAsync(It.IsAny<CreateTrekCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => new ValidationResult());
+                .ReturnsAsync(() => new ValidationResult(new List<ValidationFailure>
+                {
+                    new ValidationFailure("prop", "error")
+                }));
             var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
-            
+
             var slugHelper = new Mock<ISlugHelper>();
             slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
-            
+
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe<CurrentUser>.Nothing);
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
@@ -148,11 +86,36 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var cmd = new CreateTrekCommand();
 
             var validationResult = await executor.ValidateAndSetCommand(cmd);
-            Assert.True(validationResult.IsValid);
+            Assert.False(validationResult.IsValid);
+
             var executionResult = await executor.Execute();
 
             Assert.True(executionResult.IsFailure);
-            Assert.Equal(ErrorCodes.NotAuthenticated, executionResult.Error.ErrorCode);
+            Assert.Equal(ErrorCodes.Validation, executionResult.Error.ErrorCode);
+        }
+
+        [Fact]
+        public async Task Should_FailToCreateTrek_When_CommandIsNotSet()
+        {
+            var validator = new Mock<IValidator<CreateTrekCommand>>();
+
+            var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
+
+            var slugHelper = new Mock<ISlugHelper>();
+            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
+            var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
+
+            var currentUserAccessor = new Mock<ICurrentUserAccessor>();
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+
+            var
+                executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
+                    trekTable.Object, currentUserAccessor.Object);
+
+            var executionResult = await executor.Execute();
+
+            Assert.True(executionResult.IsFailure);
+            Assert.Equal(ErrorCodes.CommandIsNotSet, executionResult.Error.ErrorCode);
         }
 
         [Fact]
@@ -171,7 +134,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var slugHelper = new Mock<ISlugHelper>();
             slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
-            
+
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
             currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
 
@@ -187,6 +150,42 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
 
             Assert.True(executionResult.IsFailure);
             Assert.Equal(ErrorCodes.TrekNameInUse, executionResult.Error.ErrorCode);
+        }
+
+        [Fact]
+        public async Task Should_GenerateAuthError_When_NoUserIsPresent()
+        {
+            var validator = new Mock<IValidator<CreateTrekCommand>>();
+            validator.Setup(x => x.ValidateAsync(It.IsAny<CreateTrekCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => new ValidationResult());
+            var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
+
+            var slugHelper = new Mock<ISlugHelper>();
+            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
+            var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
+
+            var currentUserAccessor = new Mock<ICurrentUserAccessor>();
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe<CurrentUser>.Nothing);
+
+            var
+                executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
+                    trekTable.Object, currentUserAccessor.Object);
+
+            var cmd = new CreateTrekCommand();
+
+            var validationResult = await executor.ValidateAndSetCommand(cmd);
+            Assert.True(validationResult.IsValid);
+            var executionResult = await executor.Execute();
+
+            Assert.True(executionResult.IsFailure);
+            Assert.Equal(ErrorCodes.NotAuthenticated, executionResult.Error.ErrorCode);
+        }
+
+        [Fact]
+        public void Should_GenerateExceptions_When_ContrustorArgumentsAreNull()
+        {
+            var ctor = typeof(CreateTrekCommandExecutor).GetConstructors().First();
+            ctor.TestConstructor();
         }
 
         [Fact]

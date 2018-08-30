@@ -30,17 +30,18 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
         private readonly CloudTable _trekTable;
 
         public CreateTrekCommandExecutor(
-            IValidator<CreateTrekCommand> validator, 
+            IValidator<CreateTrekCommand> validator,
             CloudTable trekSlugTable,
-            ISlugHelper slugifyHelper, 
-            CloudTable trekTable, 
+            ISlugHelper slugifyHelper,
+            CloudTable trekTable,
             ICurrentUserAccessor currentUserAccessor)
             : base(validator)
         {
             this._trekSlugTable = trekSlugTable ?? throw new ArgumentNullException(nameof(trekSlugTable));
             this._slugifyHelper = slugifyHelper ?? throw new ArgumentNullException(nameof(slugifyHelper));
             this._trekTable = trekTable ?? throw new ArgumentNullException(nameof(trekTable));
-            this._currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
+            this._currentUserAccessor =
+                currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
         }
 
         protected override Result<CreateTrekCommandResult, ErrorData> CreateFailedResult(ErrorData errorData)
@@ -94,7 +95,8 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
                     "Something went wrong when trying to create the trek"));
             }
 
-            return Result.Ok<CreateTrekCommandResult, ErrorData>(new CreateTrekCommandResult(Guid.Parse(trek.RowKey), trekSlug.RowKey));
+            return Result.Ok<CreateTrekCommandResult, ErrorData>(
+                new CreateTrekCommandResult(Guid.Parse(trek.RowKey), trekSlug.RowKey));
         }
     }
 }

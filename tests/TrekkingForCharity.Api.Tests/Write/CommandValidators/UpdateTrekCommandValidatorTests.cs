@@ -48,7 +48,10 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
         public void Should_FailValidation_When_DescriptionIsEmpty()
         {
             var validator = new UpdateTrekCommandValidator();
-            var command = new UpdateTrekCommand {Description = string.Empty};
+            var command = new UpdateTrekCommand
+            {
+                Description = string.Empty
+            };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
             Assert.Contains(result.Errors, o => o.PropertyName == "Description");
@@ -68,7 +71,11 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
         public void Should_FailValidation_When_IdisEmptyGuid()
         {
             var validator = new UpdateTrekCommandValidator();
-            var command = new UpdateTrekCommand {Description = "Trek Description", Id = Guid.Empty};
+            var command = new UpdateTrekCommand
+            {
+                Description = "Trek Description",
+                Id = Guid.Empty
+            };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
             Assert.Contains(result.Errors, o => o.PropertyName == "Id");

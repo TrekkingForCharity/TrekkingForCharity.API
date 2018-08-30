@@ -26,6 +26,10 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="8.0.0" />
     <PackageReference Include="ResultMonad" Version="1.0.1" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="7.4.0.6452">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="WindowsAzure.Storage" Version="8.6.0" />
   </ItemGroup>
 

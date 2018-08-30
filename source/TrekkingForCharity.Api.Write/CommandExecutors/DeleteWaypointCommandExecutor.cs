@@ -28,10 +28,11 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
             IValidator<DeleteWaypointCommand> validator,
             ICurrentUserAccessor currentUserAccessor,
             CloudTable trekTable,
-            CloudTable waypointTable) 
+            CloudTable waypointTable)
             : base(validator)
         {
-            this._currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
+            this._currentUserAccessor =
+                currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
             this._trekTable = trekTable ?? throw new ArgumentNullException(nameof(trekTable));
             this._waypointTable = waypointTable ?? throw new ArgumentNullException(nameof(waypointTable));
         }

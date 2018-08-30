@@ -26,11 +26,12 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
 
         public UpdateWaypointCommandExecutor(
             IValidator<UpdateWaypointCommand> validator,
-            ICurrentUserAccessor currentUserAccessor, 
+            ICurrentUserAccessor currentUserAccessor,
             CloudTable trekTable, CloudTable waypointTable)
             : base(validator)
         {
-            this._currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
+            this._currentUserAccessor =
+                currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
             this._trekTable = trekTable ?? throw new ArgumentNullException(nameof(trekTable));
             this._waypointTable = waypointTable ?? throw new ArgumentNullException(nameof(waypointTable));
         }

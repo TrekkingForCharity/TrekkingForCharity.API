@@ -12,7 +12,6 @@ namespace TrekkingForCharity.Api.Write.Models
     {
         public TrekSlug()
         {
-            
         }
 
         public TrekSlug(char initial, string slug, string trekRef)
