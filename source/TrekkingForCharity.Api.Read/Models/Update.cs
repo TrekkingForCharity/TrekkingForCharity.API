@@ -8,7 +8,7 @@ using System;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 
-namespace TrekkingForCharity.Api.Read
+namespace TrekkingForCharity.Api.Read.Models
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class Update : TableEntity

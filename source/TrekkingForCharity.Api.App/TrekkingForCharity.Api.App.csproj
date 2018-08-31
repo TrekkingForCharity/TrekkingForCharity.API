@@ -15,10 +15,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="CommandEndpoints\CreateUpdateCommandExecutor.cs" />
-    <Compile Remove="CommandEndpoints\HitWaypointCommandExecutor.cs" />
-    <Compile Remove="CommandEndpoints\StartTrekCommandExecutor.cs" />
-    <Compile Remove="CommandEndpoints\UpdateTrekCommandExecutor.cs" />
-    <Compile Remove="CommandEndpoints\UpdateWaypointCommandExecutor.cs" />
     <Compile Remove="RestfulEndpoints\GetTrekById.cs" />
     <Compile Remove="RestfulEndpoints\GetUpdatesForTrek.cs" />
     <Compile Remove="RestfulEndpoints\GetWaypointsForTrek.cs" />
@@ -59,14 +55,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="QueryProcessors\" />
+    <Folder Include="QueryEndpoints\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CommandEndpoints\HitWaypointCommandExecutor.cs" />
-    <None Include="CommandEndpoints\StartTrekCommandExecutor.cs" />
-    <None Include="CommandEndpoints\UpdateTrekCommandExecutor.cs" />
-    <None Include="CommandEndpoints\UpdateWaypointCommandExecutor.cs" />
     <None Include="RestfulEndpoints\GetTrekById.cs" />
     <None Include="RestfulEndpoints\GetUpdatesForTrek.cs" />
     <None Include="RestfulEndpoints\GetWaypointsForTrek.cs" />

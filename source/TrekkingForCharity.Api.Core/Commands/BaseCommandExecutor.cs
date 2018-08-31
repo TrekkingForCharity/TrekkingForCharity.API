@@ -5,13 +5,12 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System;
-using FluentValidation;
 using System.Threading.Tasks;
+using FluentValidation;
 using FluentValidation.Results;
-using TrekkingForCharity.Api.Core.Commands;
 using TrekkingForCharity.Api.Core.Constants;
 
-namespace TrekkingForCharity.Api.Core.CommandExecutors
+namespace TrekkingForCharity.Api.Core.Commands
 {
     public abstract class BaseCommandExecutor<TCommand, TCommandReult>
         where TCommand : ICommand

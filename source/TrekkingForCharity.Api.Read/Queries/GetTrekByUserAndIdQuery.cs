@@ -1,31 +1,16 @@
-// Copyright 2017 Trekking for Charity
+﻿// Copyright 2017 Trekking for Charity
 // This file is part of TrekkingForCharity.Api.
 // TrekkingForCharity.Api is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System;
-using Microsoft.WindowsAzure.Storage.Table;
-using Newtonsoft.Json;
 
-namespace TrekkingForCharity.Api.Read
+namespace TrekkingForCharity.Api.Read.Queries
 {
-    [JsonObject(MemberSerialization.OptIn)]
-    public class Waypoint : TableEntity
+    public class GetTrekByUserAndIdQuery
     {
-        [JsonProperty]
-        public double Lng { get; set; }
-
-        [JsonProperty]
-        public double Lat { get; set; }
-
-        [JsonProperty]
-        public long WhenToReach => long.Parse(this.RowKey);
-
-        [JsonProperty]
-        public long? WhenReached { get; set; }
-        
-        [JsonProperty]
-        public Guid TrekId => Guid.Parse(this.PartitionKey);
+        public string UserId { get; set; }
+        public Guid TrekId { get; set; }
     }
 }

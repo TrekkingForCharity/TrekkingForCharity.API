@@ -24,7 +24,7 @@ namespace TrekkingForCharity.Api.App.CommandEndpoints
     {
         [FunctionName("CreateWaypointCommandEndpoint")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Admin, "post", Route = "commands/create-waypoint")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "commands/create-waypoint")]
             HttpRequestMessage req,
             [Table("trek")] CloudTable trekTable,
             [Table("waypoint")] CloudTable waypointTable,

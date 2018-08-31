@@ -24,7 +24,7 @@ namespace TrekkingForCharity.Api.App.CommandEndpoints
     {
         [FunctionName("CreateUpdateCommandEndpoint")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Admin, "post", Route = "commands/create-update")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "commands/create-update")]
             HttpRequestMessage req,
             [Table("trek")] CloudTable trekTable,
             [Table("update")] CloudTable updateTable,

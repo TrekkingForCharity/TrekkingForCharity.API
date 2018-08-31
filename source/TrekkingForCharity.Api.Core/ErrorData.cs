@@ -4,12 +4,18 @@
 // TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
-using TrekkingForCharity.Api.Core.Queries;
-
-namespace TrekkingForCharity.Api.Read.Queries
+namespace TrekkingForCharity.Api.Core
 {
-    public class GetTrekBySlugQuery : IQuery
+    public class ErrorData
     {
-        public string Slug { get; set; }
+        public ErrorData(string errorCode, string errorMessage)
+        {
+            this.ErrorCode = errorCode;
+            this.ErrorMessage = errorMessage;
+        }
+
+        public string ErrorCode { get; }
+
+        public string ErrorMessage { get; }
     }
 }

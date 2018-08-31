@@ -33,4 +33,8 @@
     <PackageReference Include="WindowsAzure.Storage" Version="8.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TrekkingForCharity.Api.Core\TrekkingForCharity.Api.Core.csproj" />
+  </ItemGroup>
+
 </Project>

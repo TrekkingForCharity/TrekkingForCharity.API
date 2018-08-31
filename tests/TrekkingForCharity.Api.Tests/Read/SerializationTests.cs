@@ -7,6 +7,7 @@
 using System;
 using Newtonsoft.Json;
 using TrekkingForCharity.Api.Read;
+using TrekkingForCharity.Api.Read.Models;
 using Xunit;
 
 namespace TrekkingForCharity.Api.Tests.Read

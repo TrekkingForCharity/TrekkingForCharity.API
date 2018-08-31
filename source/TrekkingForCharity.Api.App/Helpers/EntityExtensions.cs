@@ -5,14 +5,15 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using Slugify;
+using TrekkingForCharity.Api.Read.Models;
 
 namespace TrekkingForCharity.Api.App.Helpers
 {
     public static class EntityExtensions
     {
-        public static Read.Waypoint ToRead(this Write.Models.Waypoint writeWaypoint)
+        public static Waypoint ToRead(this Write.Models.Waypoint writeWaypoint)
         {
-            var readWaypoint = new Read.Waypoint
+            var readWaypoint = new Waypoint
             {
                 Lng = writeWaypoint.Lng,
                 Lat = writeWaypoint.Lat,
@@ -23,9 +24,9 @@ namespace TrekkingForCharity.Api.App.Helpers
             return readWaypoint;
         }
 
-        public static Read.Update ToRead(this Write.Models.Update writeUpdate)
+        public static Update ToRead(this Write.Models.Update writeUpdate)
         {
-            var readUpdate = new Read.Update
+            var readUpdate = new Update
             {
                 Lng = writeUpdate.Lng,
                 Lat = writeUpdate.Lat,
@@ -37,9 +38,9 @@ namespace TrekkingForCharity.Api.App.Helpers
             return readUpdate;
         }
 
-        public static Read.Trek ToRead(this Write.Models.Trek writeTrek, ISlugHelper slugHelper)
+        public static Trek ToRead(this Write.Models.Trek writeTrek, ISlugHelper slugHelper)
         {
-            var readTrek = new Read.Trek
+            var readTrek = new Trek
             {
                 BannerImage = writeTrek.BannerImage,
                 Description = writeTrek.Description,

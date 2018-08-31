@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ResultMonad;
 using TrekkingForCharity.Api.App.DataTransport;
-using TrekkingForCharity.Api.Core.CommandExecutors;
+using TrekkingForCharity.Api.Core;
 using TrekkingForCharity.Api.Core.Commands;
 
 namespace TrekkingForCharity.Api.App.Helpers

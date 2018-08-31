@@ -12,7 +12,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Table;
-using Slugify;
 using TrekkingForCharity.Api.App.Helpers;
 using TrekkingForCharity.Api.App.Infrastructure;
 using TrekkingForCharity.Api.Write.CommandExecutors;
@@ -21,14 +20,14 @@ using TrekkingForCharity.Api.Write.CommandValidators;
 
 namespace TrekkingForCharity.Api.App.CommandEndpoints
 {
-    public static class CreateTrekCommandEndpoint
+    public static class HitWaypointCommandEndpoint
     {
-        [FunctionName("CreateTrekCommandEndpoint")]
+        [FunctionName("HitWaypointCommandEndpoint")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "commands/create-trek")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "commands/hit-waypoint")]
             HttpRequestMessage req,
             [Table("trek")] CloudTable trekTable,
-            [Table("trekslug")] CloudTable trekSlugTable,
+            [Table("waypoint")] CloudTable waypointTable,
             TraceWriter log,
             ExecutionContext context)
         {
@@ -38,13 +37,11 @@ namespace TrekkingForCharity.Api.App.CommandEndpoints
 
                 var currentUserAccessor = new CurrentUserAccessor(config, req);
 
-                var slugifyHelper = new SlugHelper();
-                var validator = new CreateTrekCommandValidator(trekSlugTable, slugifyHelper);
+                var validator = new HitWaypointCommandValidator();
 
-                var executor = new CreateTrekCommandExecutor(validator, trekSlugTable, slugifyHelper, trekTable,
-                    currentUserAccessor);
+                var executor = new HitWaypointCommandExecutor(validator, currentUserAccessor, trekTable, waypointTable);
 
-                var cmd = await req.GetCommand<CreateTrekCommand>();
+                var cmd = await req.GetCommand<HitWaypointCommand>();
 
                 var validationResult = await executor.ValidateAndSetCommand(cmd);
                 if (!validationResult.IsValid)
