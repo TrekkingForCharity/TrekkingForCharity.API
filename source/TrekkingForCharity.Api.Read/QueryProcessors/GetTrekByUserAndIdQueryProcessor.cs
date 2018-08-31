@@ -4,7 +4,7 @@
 // TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -19,41 +19,30 @@ using TrekkingForCharity.Api.Read.QueryResults;
 
 namespace TrekkingForCharity.Api.Read.QueryProcessors
 {
-    public class GetTrekBySlugQueryProcessor : BaseQueryProcessor<GetTrekBySlugQuery, GetTrekBySlugQueryResult>
+    public class
+        GetTrekByUserAndIdQueryProcessor : BaseQueryProcessor<GetTrekByUserAndIdQuery, GetTrekByUserAndIdQueryResult>
     {
-        private readonly CloudTable _trekSlugTable;
         private readonly CloudTable _trekTable;
 
-        public GetTrekBySlugQueryProcessor(IValidator<GetTrekBySlugQuery> validator, CloudTable trekSlugTable,
-            CloudTable trekTable) : base(validator)
+        public GetTrekByUserAndIdQueryProcessor(IValidator<GetTrekByUserAndIdQuery> validator, CloudTable trekTable) :
+            base(validator)
         {
-            this._trekSlugTable = trekSlugTable;
-            this._trekTable = trekTable;
+            this._trekTable = trekTable ?? throw new ArgumentNullException(nameof(trekTable));
         }
 
-        protected override async Task<Result<GetTrekBySlugQueryResult, ErrorData>> Processor()
+        protected override async Task<Result<GetTrekByUserAndIdQueryResult, ErrorData>> Processor()
         {
-            var trekSlugResult =
-                await this._trekSlugTable.RetrieveWithResult<TrekSlug>(this.Query.Slug.First().ToString(),
-                    this.Query.Slug);
-
-            if (trekSlugResult.IsFailure)
-            {
-                return Result.Fail<GetTrekBySlugQueryResult, ErrorData>(new ErrorData(ErrorCodes.TrekNotFound, ""));
-            }
-
-            var trekSlug = trekSlugResult.Value;
-
-            var trekId = trekSlug.TrekRef.Split('¬');
-
-            var trekResult = await this._trekTable.RetrieveWithResult<Trek>(trekId.First(), trekId.Last());
+            var trekResult =
+                await this._trekTable.RetrieveWithResult<Trek>(this.Query.UserId, this.Query.TrekId.ToString());
 
             if (trekResult.IsFailure)
             {
-                return Result.Fail<GetTrekBySlugQueryResult, ErrorData>(new ErrorData(ErrorCodes.TrekNotFound, ""));
+                return Result.Fail<GetTrekByUserAndIdQueryResult, ErrorData>(new ErrorData(ErrorCodes.TrekNotFound,
+                    ""));
             }
 
-            return Result.Ok<GetTrekBySlugQueryResult, ErrorData>(new GetTrekBySlugQueryResult(trekResult.Value));
+            return Result.Ok<GetTrekByUserAndIdQueryResult, ErrorData>(
+                new GetTrekByUserAndIdQueryResult(trekResult.Value));
         }
     }
 }

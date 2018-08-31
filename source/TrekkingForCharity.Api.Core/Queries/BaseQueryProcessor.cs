@@ -44,7 +44,10 @@ namespace TrekkingForCharity.Api.Core.Queries
             return await this.Processor();
         }
 
-        protected abstract Result<TQueryResult, ErrorData> CreateFailedResult(ErrorData errorData);
+        protected Result<TQueryResult, ErrorData> CreateFailedResult(ErrorData errorData)
+        {
+            return Result.Fail<TQueryResult, ErrorData>(errorData);
+        }
 
         protected abstract Task<Result<TQueryResult, ErrorData>> Processor();
     }
