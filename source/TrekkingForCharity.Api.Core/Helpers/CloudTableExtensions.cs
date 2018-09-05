@@ -4,6 +4,8 @@
 // TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Table;
 using ResultMonad;
@@ -30,6 +32,37 @@ namespace TrekkingForCharity.Api.Core.Helpers
             }
 
             return Result.Ok<T, string>(obj);
+        }
+
+        public static async Task<Result<List<T>, string>> RetrieveWithResult<T>(this CloudTable cloudTable, string partitionKey)
+            where T : TableEntity
+        {
+
+            //string filter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
+
+            // Set projection to an empty list so you do not retrieve the 
+            // unnecessary data. Faster retrieval and minimal payload.
+
+            //TableQuery tableQuery =
+            //   new TableQuery().Where(filter).Select(new List<string> { });
+
+            //Execute the query
+            //var result = cloudTable.ExecuteQuery(tableQuery);
+            var data = new List<T>();
+            var query = new TableQuery<DynamicTableEntity>()
+                .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
+
+            TableContinuationToken continuationToken = null;
+            do
+            {
+                var page = await cloudTable.ExecuteQuerySegmentedAsync(query, continuationToken);
+                continuationToken = page.ContinuationToken;
+                data.AddRange(page.Results as List<T> ?? throw new InvalidOperationException());
+            }
+            while (continuationToken != null);
+
+
+            return Result.Ok<List<T>, string>(data);
         }
 
         public static async Task<ResultWithError<string>> CreateEntity<T>(this CloudTable cloudTable, T entity)

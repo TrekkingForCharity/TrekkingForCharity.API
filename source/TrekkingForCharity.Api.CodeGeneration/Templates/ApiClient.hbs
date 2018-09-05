@@ -1,0 +1,15 @@
+﻿using TrekkingForCharity.Api.Client.Commands;
+using System.Threading.Tasks;
+using Refit;
+
+namespace TrekkingForCharity.Api.Client
+{
+    public interface IApiClient
+    {
+{{#each commands}}
+        [Post("{{Route}}")]
+        [Headers("Authorization: Bearer")]
+        Task {{MethodName}}([Body]{{Name}} command);
+{{/each}}
+    }
+}

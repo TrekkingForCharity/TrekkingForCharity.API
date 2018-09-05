@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Auth0.OidcClient.Core" Version="2.3.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="Refit" Version="4.6.30" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="7.4.0.6452">

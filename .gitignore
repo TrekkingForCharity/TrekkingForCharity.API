@@ -293,3 +293,4 @@ __pycache__/
 # Artifacts from build process
 build/build-artifacts
 build/tools
+tests/TrekkingForCharity.Api.TestHarness/appsettings.Development.json

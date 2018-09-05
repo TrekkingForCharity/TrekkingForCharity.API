@@ -81,6 +81,27 @@ Task("__Test")
     }
   });
 
+  Task("__GenerateApiFiles")
+	.Does(() => {
+		var templates = new List<string>();
+		
+		
+		templates.Add("../tests/TrekkingForCharity.Api.TestHarness/ApiClient/Commands.tt");
+		
+
+		
+		foreach(var template in templates) {
+			var settings = new ProcessSettings{ 
+				Arguments = template
+			};
+			settings.Arguments.AppendSwitch("-P", "../source/TrekkingForCharity.Api.Write/bin/Debug/netstandard2.0");
+			var exitCodeWithArgument = StartProcess("./tools/mono.texttemplating.1.3.1/Mono.TextTemplating/tools/TextTransform.exe", settings);
+			if (exitCodeWithArgument != 0) {
+				TeamCity.BuildProblem(string.Format("Problem with genereation file with template {0}", template), "CLIENT_GEN");
+			}
+		}
+	});
+
 Task("__Publish")
   .Does(() => {
     
@@ -132,13 +153,14 @@ Teardown(context => {
 });  
 
 Task("Build")
-  .IsDependentOn("__Clean")
-  .IsDependentOn("__Versioning")
-  .IsDependentOn("__NugetRestore")
-  .IsDependentOn("__Test")
-  .IsDependentOn("__Publish")
-  .IsDependentOn("__Package")
-  .IsDependentOn("__ProcessDataForThirdParties")
+  //.IsDependentOn("__Clean")
+  //.IsDependentOn("__Versioning")
+  //.IsDependentOn("__NugetRestore")
+  //.IsDependentOn("__Test")
+  //.IsDependentOn("__Publish")
+  .IsDependentOn("__GenerateApiFiles")
+  //.IsDependentOn("__Package")
+  //.IsDependentOn("__ProcessDataForThirdParties")
   ;
 
 Task("Default")
