@@ -294,3 +294,4 @@ __pycache__/
 build/build-artifacts
 build/tools
 tests/TrekkingForCharity.Api.TestHarness/appsettings.Development.json
+source/TrekkingForCharity.Api.Client/Executors/Commands/*.cs

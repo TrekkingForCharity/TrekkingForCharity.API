@@ -7,13 +7,15 @@ using TrekkingForCharity.Api.Write.Commands;
 
 namespace TrekkingForCharity.Api.CodeGeneration.TemplateBuilders
 {
-    public class ApiClientTemplateBuilder
+    public class ApiClientTemplateBuilder : ITemplateBuilder
     {
         private const string TemplateName = "ApiClient.hbs";
-        private const string OutName = "IApiClient.cs";
+        private const string OutName = "source/IApiClient.cs";
 
         public void Build()
         {
+            Directory.CreateDirectory("source");
+            
             var source = File.ReadAllText($"Templates/{TemplateName}");
             var template = Handlebars.Compile(source);
             var commands = Assembly.GetAssembly(typeof(CreateTrekCommand)).GetTypes()

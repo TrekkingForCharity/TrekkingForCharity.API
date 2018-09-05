@@ -153,14 +153,14 @@ Teardown(context => {
 });  
 
 Task("Build")
-  //.IsDependentOn("__Clean")
-  //.IsDependentOn("__Versioning")
-  //.IsDependentOn("__NugetRestore")
-  //.IsDependentOn("__Test")
-  //.IsDependentOn("__Publish")
-  .IsDependentOn("__GenerateApiFiles")
-  //.IsDependentOn("__Package")
-  //.IsDependentOn("__ProcessDataForThirdParties")
+  .IsDependentOn("__Clean")
+  .IsDependentOn("__Versioning")
+  .IsDependentOn("__NugetRestore")
+  .IsDependentOn("__Test")
+  .IsDependentOn("__Publish")
+  //.IsDependentOn("__GenerateApiFiles")
+  .IsDependentOn("__Package")
+  .IsDependentOn("__ProcessDataForThirdParties")
   ;
 
 Task("Default")

@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\source\TrekkingForCharity.Api.Client\TrekkingForCharity.Api.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="ApiClient\Commands.tt">
       <Generator></Generator>
     </None>

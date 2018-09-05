@@ -18,7 +18,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\SharedFiles\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\SharedFiles\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Polly" Version="6.1.0" />
     <PackageReference Include="Refit" Version="4.6.30" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.5.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Executors\CommandResults\" />
   </ItemGroup>
 
 </Project>

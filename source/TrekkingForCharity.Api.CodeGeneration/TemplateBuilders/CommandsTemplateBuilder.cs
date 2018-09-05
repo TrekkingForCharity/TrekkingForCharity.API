@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using CaseExtensions;
 using HandlebarsDotNet;
 using TrekkingForCharity.Api.Write.Commands;
 
 namespace TrekkingForCharity.Api.CodeGeneration.TemplateBuilders
 {
-    public class CommandsTemplateBuilder
+    public class CommandsTemplateBuilder : ITemplateBuilder
     {
         private const string TemplateName = "Commands.hbs";
+
         public void Build()
         {
+            Directory.CreateDirectory("source");
+            Directory.CreateDirectory("source/commands");
+
             var source = File.ReadAllText($"Templates/{TemplateName}");
             var template = Handlebars.Compile(source);
 
@@ -26,19 +26,17 @@ namespace TrekkingForCharity.Api.CodeGeneration.TemplateBuilders
             {
                 var data = new
                 {
-                    Name = command.Name,
+                    command.Name,
                     Props = command.GetProperties().Select(x => new
                     {
                         DataType = x.PropertyType,
-                        Name = x.Name,
+                        x.Name,
                         CamelCaseName = x.Name.ToCamelCase()
-
                     })
-
                 };
 
                 var result = template(data);
-                File.WriteAllText($"{command.Name}.cs", result);
+                File.WriteAllText($"source/commands/{command.Name}.cs", result);
             }
         }
     }

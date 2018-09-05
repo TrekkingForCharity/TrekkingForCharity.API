@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using TrekkingForCharity.Api.CodeGeneration.TemplateBuilders;
 
 namespace TrekkingForCharity.Api.CodeGeneration
@@ -7,9 +10,14 @@ namespace TrekkingForCharity.Api.CodeGeneration
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            var b = new CommandsTemplateBuilder();
-            b.Build();
+            
+            var builders = new List<ITemplateBuilder>
+            {
+                new ApiClientTemplateBuilder(),
+                new CommandsTemplateBuilder()
+            };
+
+            Parallel.ForEach(builders, (builder) => { builder.Build(); });
         }
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
-using TrekkingForCharity.Api.TestHarness.ApiClient;
+
 
 namespace TrekkingForCharity.Api.TestHarness
 {
@@ -35,11 +35,8 @@ namespace TrekkingForCharity.Api.TestHarness
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<AuthenticatedHttpClientHandler>();
-            services.AddRefitClient<IApiClient>()
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:8080"))
-                .AddHttpMessageHandler<AuthenticatedHttpClientHandler>();
 
+            
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
