@@ -48,7 +48,7 @@ namespace TrekkingForCharity.Api.Client
             var content = new StringContent(JsonConvert.SerializeObject(baseCommand), Encoding.UTF8,
                 "application/json");
             var response = await this._policy.ExecuteAsync(() =>
-                this.PostAsync($"api/execute-command/{baseCommand.GetRoute()}", content));
+                this.PostAsync(baseCommand.GetRoute(), content));
 
 
             if (response.StatusCode == (HttpStatusCode)200)
@@ -90,7 +90,7 @@ namespace TrekkingForCharity.Api.Client
                 "application/json");
 
             var response = await this._policy.ExecuteAsync(() =>
-                this.PostAsync($"api/execute-command/{baseCommand.GetRoute()}", content));
+                this.PostAsync(baseCommand.GetRoute(), content));
 
             if (response.StatusCode == (HttpStatusCode)200)
             {

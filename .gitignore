@@ -295,3 +295,4 @@ build/build-artifacts
 build/tools
 tests/TrekkingForCharity.Api.TestHarness/appsettings.Development.json
 source/TrekkingForCharity.Api.Client/Executors/Commands/*.cs
+source/TrekkingForCharity.Api.Client/Executors/CommandResults/*.cs

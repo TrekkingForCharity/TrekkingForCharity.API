@@ -1,5 +1,6 @@
 ﻿@using System.Reflection
 @using TrekkingForCharity.Api.Client.Commands
+@using TrekkingForCharity.Api.Client.Executors.Commands
 @{
     var types = Assembly.GetAssembly(typeof(CreateTrekCommand)).GetTypes().Where(x => x.Name.EndsWith("Command")).ToList();
 }

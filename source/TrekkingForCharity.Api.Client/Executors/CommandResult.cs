@@ -1,6 +1,6 @@
 ﻿namespace TrekkingForCharity.Api.Client.Executors
 {
-    public class CommandResult
+    public abstract class CommandResult
     {
     }
 }

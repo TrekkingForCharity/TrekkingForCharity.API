@@ -7,14 +7,24 @@
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <Version>1.0.0</Version>
-    <Configurations>Debug;Release;Debug-App</Configurations>
+    <Configurations>Debug;Release;Debug-App;Debug-CodeGen;Release-App;Release-CodeGen</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CodeAnalysisRuleSet>TrekkingForCharity.Api.Write.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-App|AnyCPU'">
+    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Write.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Write.ruleset</CodeAnalysisRuleSet>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-CodeGen|AnyCPU'">
     <CodeAnalysisRuleSet>TrekkingForCharity.Api.Write.ruleset</CodeAnalysisRuleSet>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>

@@ -14,6 +14,7 @@ var clientPublishPath = publishPath + Directory("client");
 var releasePath = buildPath + Directory("release");
 var clientPath = buildPath + Directory("client");
 var testPath = buildPath + Directory("test");
+var codeGenPath = buildPath + Directory("code-gen");
 
 string version, branch;
 
@@ -29,10 +30,13 @@ Task("__Clean")
       CleanDirectories("../source/**/obj");
       CleanDirectories("../tests/**/bin");
       CleanDirectories("../tests/**/obj");
+      CleanDirectories("../source/TrekkingForCharity.Api.Client/Executors/Commands");
+      CleanDirectories("../source/TrekkingForCharity.Api.Client/Executors/CommandResults");
 
       CreateDirectory(publishPath);
       CreateDirectory(releasePath);
       CreateDirectory(testPath);
+      CreateDirectory(codeGenPath);
   });
 Task("__Versioning")
   .Does(() => {
@@ -63,7 +67,7 @@ Task("__Test")
     var testFilePath = MakeAbsolute(File("./build-artifacts/test/xunit-report.xml"));
     
     var testSettings = new DotNetCoreTestSettings {
-      Configuration = "Release",
+      Configuration = "Release-App",
       Logger = string.Format("trx;LogFileName={0}", MakeAbsolute(File("./build-artifacts/test/xunit-report.xml")))
     };
 
@@ -81,25 +85,17 @@ Task("__Test")
     }
   });
 
-  Task("__GenerateApiFiles")
+Task("__GenerateApiFiles")
 	.Does(() => {
-		var templates = new List<string>();
-		
-		
-		templates.Add("../tests/TrekkingForCharity.Api.TestHarness/ApiClient/Commands.tt");
-		
+		var settings = new DotNetCoreRunSettings {
+         Configuration = "Release-CodeGen",        
+     };
 
-		
-		foreach(var template in templates) {
-			var settings = new ProcessSettings{ 
-				Arguments = template
-			};
-			settings.Arguments.AppendSwitch("-P", "../source/TrekkingForCharity.Api.Write/bin/Debug/netstandard2.0");
-			var exitCodeWithArgument = StartProcess("./tools/mono.texttemplating.1.3.1/Mono.TextTemplating/tools/TextTransform.exe", settings);
-			if (exitCodeWithArgument != 0) {
-				TeamCity.BuildProblem(string.Format("Problem with genereation file with template {0}", template), "CLIENT_GEN");
-			}
-		}
+     DotNetCoreRun("../source/TrekkingForCharity.Api.CodeGeneration/TrekkingForCharity.Api.CodeGeneration.csproj", MakeAbsolute(codeGenPath).ToString(), settings);
+
+
+     CopyFiles("./build-artifacts/code-gen/commands/*.cs", "../source/TrekkingForCharity.Api.Client/Executors/Commands");
+     CopyFiles("./build-artifacts/code-gen/command-results/*.cs", "../source/TrekkingForCharity.Api.Client/Executors/CommandResults");
 	});
 
 Task("__Publish")
@@ -108,7 +104,7 @@ Task("__Publish")
     var msbuildSettings = new MSBuildSettings {
       Verbosity = Verbosity.Minimal,
       ToolVersion = MSBuildToolVersion.VS2017,
-      Configuration = "Release",
+      Configuration = "Release-App",
       PlatformTarget = PlatformTarget.MSIL
     };
     msbuildSettings.WithProperty("OutDir", MakeAbsolute(appPublishPath).ToString());
@@ -158,7 +154,7 @@ Task("Build")
   .IsDependentOn("__NugetRestore")
   .IsDependentOn("__Test")
   .IsDependentOn("__Publish")
-  //.IsDependentOn("__GenerateApiFiles")
+  .IsDependentOn("__GenerateApiFiles")
   .IsDependentOn("__Package")
   .IsDependentOn("__ProcessDataForThirdParties")
   ;
