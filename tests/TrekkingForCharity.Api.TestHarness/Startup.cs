@@ -9,9 +9,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
+using TrekkingForCharity.Api.Client;
+using TrekkingForCharity.Api.TestHarness.Infrastructure;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 
 namespace TrekkingForCharity.Api.TestHarness
@@ -35,8 +37,16 @@ namespace TrekkingForCharity.Api.TestHarness
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<AuthenticatedHttpClientHandler>();
 
-            
+            services.AddHttpClient<IApiClient, ApiClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://api.github.com/");
+            }).AddHttpMessageHandler<AuthenticatedHttpClientHandler>();
+
+
+
+
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;

@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Polly;
 using TrekkingForCharity.Api.Client.Executors;
-using TrekkingForCharity.Api.Client.Providers;
+
 using TrekkingForCharity.Api.Client.ResultConstructs;
 using TrekkingForCharity.Api.Client.ResultConstructs.Executors;
 
 namespace TrekkingForCharity.Api.Client
 {
-    public class ApiClient : HttpClient, IApiClient
+    public class ApiClient : IApiClient
     {
-        private readonly AuthorizationProvider _configuration;
+        private readonly HttpClient _client;
 
         private readonly Policy _policy = Policy
             .Handle<CommunicationException>()
@@ -29,11 +29,9 @@ namespace TrekkingForCharity.Api.Client
                 TimeSpan.FromSeconds(3)
             });
 
-        public ApiClient(AuthorizationProvider configuration)
+        public ApiClient(HttpClient client)
         {
-            this.BaseAddress = new Uri(configuration.ApiPath);
-            this._configuration = configuration;
-
+            this._client = client;
         }
 
 
@@ -43,12 +41,10 @@ namespace TrekkingForCharity.Api.Client
             where TCommand : BaseCommand
             where TCommandResult : CommandResult
         {
-            var token = await this._configuration.GetToken();
-            this.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var content = new StringContent(JsonConvert.SerializeObject(baseCommand), Encoding.UTF8,
                 "application/json");
             var response = await this._policy.ExecuteAsync(() =>
-                this.PostAsync(baseCommand.GetRoute(), content));
+                this._client.PostAsync(baseCommand.GetRoute(), content));
 
 
             if (response.StatusCode == (HttpStatusCode)200)
@@ -84,13 +80,11 @@ namespace TrekkingForCharity.Api.Client
         public async Task<CompletedExecution> ExecuteCommand<TCommand>(TCommand baseCommand)
             where TCommand : BaseCommand
         {
-            var token = await this._configuration.GetToken();
-            this.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var content = new StringContent(JsonConvert.SerializeObject(baseCommand), Encoding.UTF8,
                 "application/json");
 
             var response = await this._policy.ExecuteAsync(() =>
-                this.PostAsync(baseCommand.GetRoute(), content));
+                this._client.PostAsync(baseCommand.GetRoute(), content));
 
             if (response.StatusCode == (HttpStatusCode)200)
             {

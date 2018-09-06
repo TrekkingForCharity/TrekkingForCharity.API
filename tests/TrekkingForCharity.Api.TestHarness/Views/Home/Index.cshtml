@@ -1,45 +1,48 @@
 ﻿@using System.Reflection
-@using TrekkingForCharity.Api.Client.Commands
 @using TrekkingForCharity.Api.Client.Executors.Commands
 @{
-    var types = Assembly.GetAssembly(typeof(CreateTrekCommand)).GetTypes().Where(x => x.Name.EndsWith("Command")).ToList();
+    var types = Assembly.GetAssembly(typeof(CreateTrekCommand)).GetTypes().Where(x => x.Name.EndsWith("Command") && x.Name != "BaseCommand").ToList();
 }
 
-<div class="columns">
-    <div class="column">
-        <nav class="panel">
-            <p class="panel-heading">
-                Commands
-            </p>
-        @foreach (var type in types)
-        {
-            <a class="panel-block">
-                @type.Name
-            </a>
-        }
-        </nav>
-    </div>
-    <div class="column is-three-fifths">
-        @foreach (var type in types)
-        {
-            <form id="@($"form-{type.Name}")">
-                @foreach (var prop in type.GetProperties())
+<div class="container">
+    <div class="columns">
+        <div class="column">
+            <nav class="panel">
+                <p class="panel-heading">
+                    Commands
+                </p>
+                @foreach (var type in types)
                 {
-                    <div class="field">
-                        <label for="@($"{type.Name}.{prop.Name}")">@prop.Name</label>
-                        <div class="control">
-                            <input class="input" type="text" name="@prop.Name" id="@($"{type.Name}.{prop.Name}")" />
-                        </div>
-                    </div>
+                    <a class="panel-block" data-for="command-@type.Name">@type.Name</a>
                 }
-                <button type="submit" class="button">Submit</button>
-            </form>
-        }
+            </nav>
+        </div>
+        <div class="column is-three-fifths">
+            @foreach (var type in types)
+            {
+                <form id="@($"command-{type.Name}")">
+                    @foreach (var prop in type.GetProperties())
+                    {
+                        <div class="field">
+                            <label for="@($"{type.Name}.{prop.Name}")">@prop.Name</label>
+                            <div class="control">
+                                <input class="input" type="text" name="@prop.Name" id="@($"{type.Name}.{prop.Name}")"/>
+                            </div>
+                        </div>
+                    }
+                    <button type="submit" class="button">Submit</button>
+                </form>
+            }
+        </div>
+
     </div>
-<div class="column">
-    </div>
+
+
 </div>
-
-
-<h1>Page Content</h1>
-
+<script>
+    var forms = document.querySelectorAll('form');
+    for (var i = 0; i < forms.length; ++i) {
+        forms[i].classList.add('is-hidden');
+    }
+    var links = 
+</script>

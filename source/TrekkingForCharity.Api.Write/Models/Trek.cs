@@ -50,7 +50,7 @@ namespace TrekkingForCharity.Api.Write.Models
 
         public void Start()
         {
-            this.WhenStarted = DateTimeOffset.Now.ToUnixTimeSeconds();
+            this.WhenStarted = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         }
     }
 }

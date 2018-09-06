@@ -37,17 +37,6 @@ namespace TrekkingForCharity.Api.Core.Helpers
         public static async Task<Result<List<T>, string>> RetrieveWithResult<T>(this CloudTable cloudTable, string partitionKey)
             where T : TableEntity
         {
-
-            //string filter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
-
-            // Set projection to an empty list so you do not retrieve the 
-            // unnecessary data. Faster retrieval and minimal payload.
-
-            //TableQuery tableQuery =
-            //   new TableQuery().Where(filter).Select(new List<string> { });
-
-            //Execute the query
-            //var result = cloudTable.ExecuteQuery(tableQuery);
             var data = new List<T>();
             var query = new TableQuery<DynamicTableEntity>()
                 .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));

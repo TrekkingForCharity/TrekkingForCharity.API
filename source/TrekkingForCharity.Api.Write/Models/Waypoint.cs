@@ -37,7 +37,7 @@ namespace TrekkingForCharity.Api.Write.Models
 
         public void Hit()
         {
-            this.WhenReached = DateTimeOffset.Now.ToUnixTimeSeconds();
+            this.WhenReached = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         }
 
         public void UpdateBasicDetails(double lng, double lat, long hitEpoch)

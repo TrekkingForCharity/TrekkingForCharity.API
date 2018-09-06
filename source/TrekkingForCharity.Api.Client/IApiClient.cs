@@ -1,6 +1,4 @@
-using TrekkingForCharity.Api.Client.Commands;
 using System.Threading.Tasks;
-using Refit;
 using TrekkingForCharity.Api.Client.Executors;
 using TrekkingForCharity.Api.Client.ResultConstructs.Executors;
 

@@ -21,7 +21,7 @@ namespace TrekkingForCharity.Api.Write.Models
             this.Lat = lat;
             this.Title = title;
             this.Message = message;
-            this.RowKey = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+            this.RowKey = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
             this.PartitionKey = trekId.ToString();
         }
 
