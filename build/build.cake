@@ -37,6 +37,8 @@ Task("__Clean")
       CreateDirectory(releasePath);
       CreateDirectory(testPath);
       CreateDirectory(codeGenPath);
+      CreateDirectory("../source/TrekkingForCharity.Api.Client/Executors/Commands");
+      CreateDirectory("../source/TrekkingForCharity.Api.Client/Executors/CommandResults");
   });
 Task("__Versioning")
   .Does(() => {
