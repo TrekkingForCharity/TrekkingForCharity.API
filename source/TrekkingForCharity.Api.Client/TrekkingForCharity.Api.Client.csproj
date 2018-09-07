@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Configurations>Debug;Release;Debug-App;Debug-CodeGen;Release-App;Release-CodeGen</Configurations>
+    <Configurations>Debug;Release;</Configurations>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <Version>1.0.0</Version>
@@ -14,22 +14,6 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <CodeAnalysisRuleSet>TrekkingForCharity.Api.Client.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-CodeGen|AnyCPU'">
-    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Client-1.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-CodeGen|AnyCPU'">
-    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Client-1.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-App|AnyCPU'">
-    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Client-1.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-App|AnyCPU'">
-    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Client-1.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>

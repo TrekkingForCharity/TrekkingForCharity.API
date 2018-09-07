@@ -64,12 +64,26 @@ Task("__NugetRestore")
   .Does(() => {
       DotNetCoreRestore("../TrekkingForCharity.Api.sln");
   });
+
+Task("__GenerateApiFiles")
+	.Does(() => {
+		var settings = new DotNetCoreRunSettings {
+         Configuration = "Release",        
+     };
+
+     DotNetCoreRun("../source/TrekkingForCharity.Api.CodeGeneration/TrekkingForCharity.Api.CodeGeneration.csproj", MakeAbsolute(codeGenPath).ToString(), settings);
+
+
+     CopyFiles("./build-artifacts/code-gen/commands/*.cs", "../source/TrekkingForCharity.Api.Client/Executors/Commands");
+     CopyFiles("./build-artifacts/code-gen/command-results/*.cs", "../source/TrekkingForCharity.Api.Client/Executors/CommandResults");
+	});
+
 Task("__Test")
   .Does(() => {
     var testFilePath = MakeAbsolute(File("./build-artifacts/test/xunit-report.xml"));
     
     var testSettings = new DotNetCoreTestSettings {
-      Configuration = "Release-App",
+      Configuration = "Release",
       Logger = string.Format("trx;LogFileName={0}", MakeAbsolute(File("./build-artifacts/test/xunit-report.xml")))
     };
 
@@ -87,26 +101,13 @@ Task("__Test")
     }
   });
 
-Task("__GenerateApiFiles")
-	.Does(() => {
-		var settings = new DotNetCoreRunSettings {
-         Configuration = "Release-CodeGen",        
-     };
-
-     DotNetCoreRun("../source/TrekkingForCharity.Api.CodeGeneration/TrekkingForCharity.Api.CodeGeneration.csproj", MakeAbsolute(codeGenPath).ToString(), settings);
-
-
-     CopyFiles("./build-artifacts/code-gen/commands/*.cs", "../source/TrekkingForCharity.Api.Client/Executors/Commands");
-     CopyFiles("./build-artifacts/code-gen/command-results/*.cs", "../source/TrekkingForCharity.Api.Client/Executors/CommandResults");
-	});
-
 Task("__Publish")
   .Does(() => {
     
     var msbuildSettings = new MSBuildSettings {
       Verbosity = Verbosity.Minimal,
       ToolVersion = MSBuildToolVersion.VS2017,
-      Configuration = "Release-App",
+      Configuration = "Release",
       PlatformTarget = PlatformTarget.MSIL
     };
     msbuildSettings.WithProperty("OutDir", MakeAbsolute(appPublishPath).ToString());
@@ -154,9 +155,9 @@ Task("Build")
   .IsDependentOn("__Clean")
   .IsDependentOn("__Versioning")
   .IsDependentOn("__NugetRestore")
+  .IsDependentOn("__GenerateApiFiles")
   .IsDependentOn("__Test")
   .IsDependentOn("__Publish")
-  .IsDependentOn("__GenerateApiFiles")
   .IsDependentOn("__Package")
   .IsDependentOn("__ProcessDataForThirdParties")
   ;
