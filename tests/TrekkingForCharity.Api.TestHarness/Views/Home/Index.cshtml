@@ -20,7 +20,7 @@
         <div class="column is-three-fifths">
             @foreach (var type in types)
             {
-                <form id="@($"command-{type.Name}")">
+                <form id="@($"command-{type.Name}")" asp-action="ProcessCommand" asp-route-commandName="@type.Name" asp-antiforgery="false" >
                     @foreach (var prop in type.GetProperties())
                     {
                         <div class="field">
@@ -40,9 +40,57 @@
 
 </div>
 <script>
+
+    function toJSONString( form ) {
+        var obj = {};
+        var elements = form.querySelectorAll( "input, select, textarea" );
+        for( var i = 0; i < elements.length; ++i ) {
+            var element = elements[i];
+            var name = element.name;
+            var value = element.value;
+
+            if( name ) {
+                obj[ name ] = value;
+            }
+        }
+
+        return JSON.stringify( obj );
+    }
+
     var forms = document.querySelectorAll('form');
     for (var i = 0; i < forms.length; ++i) {
         forms[i].classList.add('is-hidden');
+        forms[i].onsubmit = (event) => {
+            event.preventDefault();
+            var form = event.currentTarget;
+            var formData = toJSONString(form);
+            console.log(formData);
+            fetch(form.action,
+                {
+                    method: 'POST',
+                    credentials: "same-origin",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ commandData: formData })
+
+                }).then(response => response.json()).then(j => console.log(j));
+
+        };
     }
-    var links = 
+    var links = document.querySelectorAll('a[data-for]');
+    for (i = 0; i < forms.length; ++i) {
+        links[i].onclick = (event) => {
+            var forms = document.querySelectorAll('form');
+            for (var i = 0; i < forms.length; ++i) {
+                forms[i].classList.add('is-hidden');
+            }
+            var link = event.currentTarget;
+            var formToShow = link.dataset['for'];
+            var form = document.getElementById(formToShow);
+            form.classList.remove('is-hidden');
+        };
+
+    }
 </script>

@@ -29,6 +29,10 @@
     <CodeAnalysisRuleSet>TrekkingForCharity.Api.CodeGeneration.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-CodeGen|AnyCPU'">
+    <CodeAnalysisRuleSet>TrekkingForCharity.Api.CodeGeneration-1.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="stylecop.json" />
   </ItemGroup>

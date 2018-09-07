@@ -12,23 +12,7 @@
     <CodeAnalysisRuleSet>TrekkingForCharity.Api.Core.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-App|AnyCPU'">
-    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Core.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Core.ruleset</CodeAnalysisRuleSet>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-CodeGen|AnyCPU'">
-    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Core.ruleset</CodeAnalysisRuleSet>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-App|AnyCPU'">
     <CodeAnalysisRuleSet>TrekkingForCharity.Api.Core.ruleset</CodeAnalysisRuleSet>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
@@ -43,13 +27,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="8.0.0" />
+    <PackageReference Include="FluentValidation" Version="8.0.100" />
     <PackageReference Include="ResultMonad" Version="1.0.1" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="7.4.0.6452">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="7.5.0.6605">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="WindowsAzure.Storage" Version="8.6.0" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.1" />
   </ItemGroup>
 
 </Project>

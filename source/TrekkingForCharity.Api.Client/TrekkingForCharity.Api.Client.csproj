@@ -16,6 +16,22 @@
     <CodeAnalysisRuleSet>TrekkingForCharity.Api.Client.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-CodeGen|AnyCPU'">
+    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Client-1.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-CodeGen|AnyCPU'">
+    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Client-1.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-App|AnyCPU'">
+    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Client-1.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-App|AnyCPU'">
+    <CodeAnalysisRuleSet>TrekkingForCharity.Api.Client-1.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\SharedFiles\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
   </ItemGroup>

@@ -1,12 +1,21 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TrekkingForCharity.Api.Client;
+using TrekkingForCharity.Api.Client.Executors.Commands;
 
 namespace TrekkingForCharity.Api.TestHarness.Controllers
 {
+
+    public class CommandModel
+    {
+        public string CommandData { get; set; }
+    }
     public class HomeController : Controller
     {
         private readonly IApiClient _apiClient;
@@ -21,6 +30,21 @@ namespace TrekkingForCharity.Api.TestHarness.Controllers
             return this.View();
         }
 
+
+        public async Task<IActionResult> ProcessCommand([FromQuery] string commandName, [FromBody] CommandModel model)
+        {
+            var commandType = Assembly.GetAssembly(typeof(CreateTrekCommand)).GetTypes().Single(x => x.Name == commandName);
+            var command = JsonConvert.DeserializeObject(model.CommandData, commandType);
+            var method = typeof(ApiClient).GetMethod("ExecuteCommand");
+            var generic = method.MakeGenericMethod(commandType);
+            var task = (Task)generic.Invoke(this._apiClient, new []{ command });
+
+            await task.ConfigureAwait(false);
+
+            var resultProperty = task.GetType().GetProperty("Result");
+            return this.Json(resultProperty.GetValue(task));
+
+        }
 
         [Route("/Account/Login")]
         public async Task Login(string returnUrl = "/")
