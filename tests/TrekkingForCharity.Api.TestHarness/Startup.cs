@@ -52,7 +52,16 @@ namespace TrekkingForCharity.Api.TestHarness
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-   .AddCookie()
+   .AddCookie(options =>
+                {
+                    options.Events = new CookieAuthenticationEvents
+                    {
+                        OnValidatePrincipal = context =>
+                        {
+                            return Task.FromResult(0);
+                        }
+                    };
+                })
    .AddOpenIdConnect("Auth0", options => {
         // Set the authority to your Auth0 domain
         options.Authority = $"https://{Configuration["Auth0:Domain"]}";
