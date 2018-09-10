@@ -41,7 +41,7 @@ namespace TrekkingForCharity.Api.TestHarness
 
             services.AddHttpClient<IApiClient, ApiClient>(client =>
             {
-                client.BaseAddress = new Uri("https://api.github.com/");
+                client.BaseAddress = new Uri("http://localhost:7071/");
             }).AddHttpMessageHandler<AuthenticatedHttpClientHandler>();
 
 

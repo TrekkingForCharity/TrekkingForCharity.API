@@ -15,7 +15,7 @@ namespace TrekkingForCharity.Api.Write.Commands
 
         public double Lat { get; set; }
 
-        public int WhenToReach { get; set; }
+        public long WhenToReach { get; set; }
 
         public Guid TrekId { get; set; }
 
