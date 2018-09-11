@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using MaybeMonad;
 
 namespace TrekkingForCharity.Api.Core.Infrastructure
 {
     public interface ICurrentUserAccessor
     {
-        Maybe<CurrentUser> GetCurrentUser();
+        Task<Maybe<CurrentUser>> GetCurrentUser();
     }
 
     public class CurrentUser

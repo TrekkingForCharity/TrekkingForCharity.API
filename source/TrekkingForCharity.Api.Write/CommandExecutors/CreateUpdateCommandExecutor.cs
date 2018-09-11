@@ -44,7 +44,7 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
 
         protected override async Task<Result<CreateUpdateCommandResult, ErrorData>> Executor()
         {
-            var currentUserMaybe = this._currentUserAccessor.GetCurrentUser();
+            var currentUserMaybe = await this._currentUserAccessor.GetCurrentUser();
             if (currentUserMaybe.HasNoValue)
             {
                 return Result.Fail<CreateUpdateCommandResult, ErrorData>(new ErrorData(

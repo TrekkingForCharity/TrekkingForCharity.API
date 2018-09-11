@@ -46,7 +46,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             });
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new CreateWaypointCommandExecutor(
@@ -79,7 +79,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var waypointTable = new Mock<CloudTable>(new Uri("https://waypoint.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new CreateWaypointCommandExecutor(
@@ -109,7 +109,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var waypointTable = new Mock<CloudTable>(new Uri("https://waypoint.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new CreateWaypointCommandExecutor(
@@ -140,7 +140,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var waypointTable = new Mock<CloudTable>(new Uri("https://waypoint.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new CreateWaypointCommandExecutor(
@@ -171,7 +171,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var waypointTable = new Mock<CloudTable>(new Uri("https://waypoint.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe<CurrentUser>.Nothing);
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe<CurrentUser>.Nothing);
 
             var
                 executor = new CreateWaypointCommandExecutor(
@@ -218,7 +218,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             });
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new CreateWaypointCommandExecutor(

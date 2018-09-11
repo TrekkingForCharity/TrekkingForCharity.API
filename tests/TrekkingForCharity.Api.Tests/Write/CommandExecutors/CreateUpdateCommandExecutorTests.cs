@@ -46,7 +46,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             });
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new CreateUpdateCommandExecutor(
@@ -79,7 +79,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var updateTable = new Mock<CloudTable>(new Uri("https://update.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new CreateUpdateCommandExecutor(
@@ -109,7 +109,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var updateTable = new Mock<CloudTable>(new Uri("https://update.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new CreateUpdateCommandExecutor(
@@ -140,7 +140,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var updateTable = new Mock<CloudTable>(new Uri("https://update.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new CreateUpdateCommandExecutor(
@@ -172,7 +172,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var updateTable = new Mock<CloudTable>(new Uri("https://update.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe<CurrentUser>.Nothing);
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe<CurrentUser>.Nothing);
 
             var
                 executor = new CreateUpdateCommandExecutor(
@@ -219,7 +219,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             });
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new CreateUpdateCommandExecutor(

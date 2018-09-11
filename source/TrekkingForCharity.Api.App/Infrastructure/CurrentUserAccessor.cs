@@ -6,6 +6,7 @@
 
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using MaybeMonad;
 using Microsoft.Extensions.Configuration;
 using TrekkingForCharity.Api.App.Helpers;
@@ -24,11 +25,11 @@ namespace TrekkingForCharity.Api.App.Infrastructure
             this._requestMessage = requestMessage;
         }
 
-        public Maybe<CurrentUser> GetCurrentUser()
+        public async Task<Maybe<CurrentUser>> GetCurrentUser()
         {
             var cert = this._config["Cert"];
 
-            var principleMaybe = this._requestMessage.Headers.GetCurrentPrinciple(cert);
+            var principleMaybe = await this._requestMessage.Headers.GetCurrentPrinciple(cert);
             if (principleMaybe.HasNoValue)
             {
                 return Maybe<CurrentUser>.Nothing;

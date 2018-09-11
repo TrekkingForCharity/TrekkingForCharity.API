@@ -55,7 +55,7 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
             await this._trekTable.CreateIfNotExistsAsync();
             await this._trekSlugTable.CreateIfNotExistsAsync();
 
-            var currentUserMaybe = this._currentUserAccessor.GetCurrentUser();
+            var currentUserMaybe = await this._currentUserAccessor.GetCurrentUser();
             if (currentUserMaybe.HasNoValue)
             {
                 return Result.Fail<CreateTrekCommandResult, ErrorData>(new ErrorData(

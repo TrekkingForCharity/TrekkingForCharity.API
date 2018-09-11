@@ -41,7 +41,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new StartTrekCommandExecutor(
@@ -70,7 +70,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new StartTrekCommandExecutor(
@@ -99,7 +99,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
                 HttpStatusCode = 404
             });
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new StartTrekCommandExecutor(
@@ -129,7 +129,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe<CurrentUser>.Nothing);
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe<CurrentUser>.Nothing);
 
             var
                 executor = new StartTrekCommandExecutor(
@@ -173,7 +173,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
                 }
             });
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new StartTrekCommandExecutor(
@@ -210,7 +210,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
                 }
             });
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
-            currentUserAccessor.Setup(x => x.GetCurrentUser()).Returns(Maybe.From(new CurrentUser("abc")));
+            currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
             var
                 executor = new StartTrekCommandExecutor(

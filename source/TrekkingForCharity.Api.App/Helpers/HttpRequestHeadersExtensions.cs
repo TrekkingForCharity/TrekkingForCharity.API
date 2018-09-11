@@ -9,21 +9,30 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Threading.Tasks;
 using MaybeMonad;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
 namespace TrekkingForCharity.Api.App.Helpers
 {
     public static class HttpRequestHeadersExtensions
     {
-        public static Maybe<ClaimsPrincipal> GetCurrentPrinciple(
+        private static OpenIdConnectConfiguration _config;
+        private static IConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
+
+        private static readonly string ISSUER = "https://trekkingforcharity.eu.auth0.com/";
+        private static readonly string AUDIENCE = "https://api.trekkingforcharity.org";
+
+        public static async Task<Maybe<JwtSecurityToken>> GetCurrentPrinciple(
             this HttpRequestHeaders httpRequestHeaders,
             string certData)
         {
             if (!httpRequestHeaders.Contains("Authorization"))
             {
-                return Maybe<ClaimsPrincipal>.Nothing;
+                return Maybe<JwtSecurityToken>.Nothing;
             }
 
             var headerValue = httpRequestHeaders.GetValues("Authorization");
@@ -32,59 +41,71 @@ namespace TrekkingForCharity.Api.App.Helpers
                 string.Empty;
             if (string.IsNullOrWhiteSpace(bearerValue))
             {
-                return Maybe<ClaimsPrincipal>.Nothing;
+                return Maybe<JwtSecurityToken>.Nothing;
             }
 
             var bearerToken = bearerValue.Split(' ')[1];
 
-            return ValidateToken(bearerToken, certData);
+            return await ValidateToken(bearerToken);
         }
 
-        private static X509Certificate2 GenerateCertificate(string cert)
+        private static async Task<Maybe<JwtSecurityToken>> ValidateToken(string jwtToken)
         {
-            try
-            {
-                var rawData = Convert.FromBase64String(cert);
-                return new X509Certificate2(rawData);
-            }
-            catch
-            {
-                return null;
-            }
-        }
+            var documentRetriever = new HttpDocumentRetriever {RequireHttps = ISSUER.StartsWith("https://")};
 
-        private static Maybe<ClaimsPrincipal> ValidateToken(string jwtToken, string certData)
-        {
-            var handler = new JwtSecurityTokenHandler();
-
-            if (!handler.CanReadToken(jwtToken))
+            if (_configurationManager == null)
             {
-                return null;
+                _configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                    $"{ISSUER}.well-known/openid-configuration",
+                    new OpenIdConnectConfigurationRetriever(),
+                    documentRetriever
+                );
             }
 
-            handler.InboundClaimTypeMap.Clear();
-
-            var cert = new X509SecurityKey(GenerateCertificate(certData));
-
-            try
+            if (_config == null)
             {
-                return Maybe.From(handler.ValidateToken(
-                    jwtToken,
-                    new TokenValidationParameters
-                    {
-                        ValidateAudience = false,
-                        ValidateIssuer = false,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = cert,
-                        SignatureValidator = (t, param) => new JwtSecurityToken(t),
-                        NameClaimType = "sub"
-                    },
-                    out _));
+                _config = await _configurationManager.GetConfigurationAsync(CancellationToken.None);
             }
-            catch (SecurityTokenExpiredException)
+
+            var validationParameter = new TokenValidationParameters
             {
-                return Maybe<ClaimsPrincipal>.Nothing;
+                RequireSignedTokens = true,
+                ValidAudience = AUDIENCE,
+                ValidateAudience = true,
+                ValidIssuer = ISSUER,
+                ValidateIssuer = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                IssuerSigningKeys = _config.SigningKeys
+            };
+
+            ClaimsPrincipal result = null;
+            var tries = 0;
+            SecurityToken token = null;
+            while (result == null && tries <= 1)
+            {
+                try
+                {
+                    var handler = new JwtSecurityTokenHandler();
+                    result = handler.ValidateToken(jwtToken, validationParameter, out token);
+                }
+                catch (SecurityTokenSignatureKeyNotFoundException)
+                {
+                    _configurationManager.RequestRefresh();
+                    tries++;
+                }
+                catch (SecurityTokenException)
+                {
+                    return Maybe<JwtSecurityToken>.Nothing;
+                }
             }
+
+            if (token is JwtSecurityToken jwtSecurityToken)
+            {
+                return Maybe.From(jwtSecurityToken);
+            }
+
+            return Maybe<JwtSecurityToken>.Nothing;
         }
     }
 }
