@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using TrekkingForCharity.Api.Client;
 using TrekkingForCharity.Api.TestHarness.Infrastructure;
+using TrekkingForCharity.Api.TestHarness.Infrastructure.AppStartup;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace TrekkingForCharity.Api.TestHarness
@@ -25,6 +26,8 @@ namespace TrekkingForCharity.Api.TestHarness
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<Auth0Settings>(this.Configuration.GetSection("Auth0"));
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -40,79 +43,7 @@ namespace TrekkingForCharity.Api.TestHarness
             }).AddHttpMessageHandler<AuthenticatedHttpClientHandler>();
 
 
-            services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                })
-                .AddCookie(options =>
-                {
-                    options.Events = new CookieAuthenticationEvents
-                    {
-                        OnValidatePrincipal = context => { return Task.FromResult(0); }
-                    };
-                })
-                .AddOpenIdConnect("Auth0", options =>
-                {
-                    // Set the authority to your Auth0 domain
-                    options.Authority = $"https://{this.Configuration["Auth0:Domain"]}";
-
-                    // Configure the Auth0 Client ID and Client Secret
-                    options.ClientId = this.Configuration["Auth0:ClientId"];
-                    options.ClientSecret = this.Configuration["Auth0:ClientSecret"];
-
-                    // Set response type to code
-                    options.ResponseType = "code";
-
-                    // Configure the scope
-                    options.Scope.Clear();
-                    options.Scope.Add("openid");
-
-                    // Set the callback path, so Auth0 will call back to http://localhost:5000/signin-auth0
-                    // Also ensure that you have added the URL as an Allowed Callback URL in your Auth0 dashboard
-                    options.CallbackPath = new PathString("/signin-auth0");
-
-                    options.SaveTokens = true;
-
-                    // Configure the Claims Issuer to be Auth0
-                    options.ClaimsIssuer = "Auth0";
-
-                    options.Events = new OpenIdConnectEvents
-                    {
-                        // handle the logout redirection
-                        OnRedirectToIdentityProviderForSignOut = context =>
-                        {
-                            var logoutUri =
-                                $"https://{this.Configuration["Auth0:Domain"]}/v2/logout?client_id={this.Configuration["Auth0:ClientId"]}";
-
-                            var postLogoutUri = context.Properties.RedirectUri;
-                            if (!string.IsNullOrEmpty(postLogoutUri))
-                            {
-                                if (postLogoutUri.StartsWith("/"))
-                                {
-                                    // transform to absolute
-                                    var request = context.Request;
-                                    postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase +
-                                                    postLogoutUri;
-                                }
-
-                                logoutUri += $"&returnTo={Uri.EscapeDataString(postLogoutUri)}";
-                            }
-
-                            context.Response.Redirect(logoutUri);
-                            context.HandleResponse();
-
-                            return Task.CompletedTask;
-                        },
-                        OnRedirectToIdentityProvider = context =>
-                        {
-                            context.ProtocolMessage.SetParameter("audience", "https://api.trekkingforcharity.org");
-
-                            return Task.FromResult(0);
-                        }
-                    };
-                });
+            services.AddCustomAuthentication(this.Configuration);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

@@ -1,0 +1,225 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Auth0.AuthenticationApi;
+using Auth0.AuthenticationApi.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+
+namespace TrekkingForCharity.Api.TestHarness.Infrastructure.AppStartup
+{
+    public static class AutheticationService
+    {
+        
+        public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+                .AddCookie(options =>
+                {
+                    options.Events = new CookieAuthenticationEvents
+                    {
+                       OnValidatePrincipal = ValidateExpirationAndTryRefresh,
+                        
+                    };
+                })
+                .AddOpenIdConnect("Auth0", options =>
+                {
+                    // Set the authority to your Auth0 domain
+                    options.Authority = $"https://{configuration["Auth0:Domain"]}";
+
+                    // Configure the Auth0 Client ID and Client Secret
+                    options.ClientId = configuration["Auth0:ClientId"];
+                    options.ClientSecret = configuration["Auth0:ClientSecret"];
+
+                    // Set response type to code
+                    options.ResponseType = "code";
+
+                    // Configure the scope
+                    options.Scope.Clear();
+                    options.Scope.Add("openid");
+
+                    // Set the callback path, so Auth0 will call back to http://localhost:5000/signin-auth0
+                    // Also ensure that you have added the URL as an Allowed Callback URL in your Auth0 dashboard
+                    options.CallbackPath = new PathString("/signin-auth0");
+
+                    options.SaveTokens = true;
+
+                    // Configure the Claims Issuer to be Auth0
+                    options.ClaimsIssuer = "Auth0";
+
+                    options.Events = new OpenIdConnectEvents
+                    {
+                        // handle the logout redirection
+                        OnRedirectToIdentityProviderForSignOut = OnRedirectToIdentityProviderForSignOut,
+                        OnRedirectToIdentityProvider = OnRedirectToIdentityProvider,
+                        OnTicketReceived = context =>
+                        {
+                            // Get the ClaimsIdentity
+                            var identity = context.Principal.Identity as ClaimsIdentity;
+                            if (identity != null)
+                            {
+                                // Check if token names are stored in Properties
+                                if (context.Properties.Items.ContainsKey(".TokenNames"))
+                                {
+                                    // Token names a semicolon separated
+                                    string[] tokenNames = context.Properties.Items[".TokenNames"].Split(';');
+
+                                    // Add each token value as Claim
+                                    foreach (var tokenName in tokenNames)
+                                    {
+                                        // Tokens are stored in a Dictionary with the Key ".Token.<token name>"
+                                        string tokenValue = context.Properties.Items[$".Token.{tokenName}"];
+
+                                        identity.AddClaim(new Claim(tokenName, tokenValue));
+                                    }
+                                }
+                            }
+
+                            return Task.FromResult(0);
+                        }
+
+
+                    };
+                });
+
+            return services;
+        }
+
+        private static Task OnRedirectToIdentityProviderForSignOut(RedirectContext context)
+        {
+            var auth0Settings = context.HttpContext.RequestServices.GetRequiredService<IOptions<Auth0Settings>>();
+            var logoutUri =
+                $"https://{auth0Settings.Value.Domain}/v2/logout?client_id={auth0Settings.Value.ClientId}";
+
+            var postLogoutUri = context.Properties.RedirectUri;
+            if (!string.IsNullOrEmpty(postLogoutUri))
+            {
+                if (postLogoutUri.StartsWith("/"))
+                {
+                    // transform to absolute
+                    var request = context.Request;
+                    postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase +
+                                    postLogoutUri;
+                }
+
+                logoutUri += $"&returnTo={Uri.EscapeDataString(postLogoutUri)}";
+            }
+
+            context.Response.Redirect(logoutUri);
+            context.HandleResponse();
+
+            return Task.CompletedTask;
+        }
+
+        private static Task OnRedirectToIdentityProvider(RedirectContext context)
+        {
+            context.ProtocolMessage.SetParameter("audience", "https://api.trekkingforcharity.org");
+
+            return Task.FromResult(0);
+        }
+
+
+        public static async Task ValidateExpirationAndTryRefresh(CookieValidatePrincipalContext context)
+        {
+            var auth0Settings = context.HttpContext.RequestServices.GetRequiredService<IOptions<Auth0Settings>>();
+            var shouldReject = true;
+            
+            var expClaim = context.Principal.FindFirst(c => c.Type == "expires_at");
+
+            // Unix timestamp is seconds past epoch
+            var validTo = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(int.Parse(expClaim.Value));
+
+            if (validTo > DateTimeOffset.UtcNow)
+            {
+                shouldReject = false;
+            }
+            else
+            {
+                var refreshToken = context.Principal.FindFirst("refresh_token")?.Value;
+                if (refreshToken != null)
+                {
+                    // Try to get a new id_token from auth0 using refresh token
+                    var authClient = new AuthenticationApiClient(new Uri($"https://{auth0Settings.Value.Domain}"));
+                    var newIdToken =
+                        await
+                        authClient.GetTokenAsync(
+                            new RefreshTokenRequest
+                            {
+                                ClientId = auth0Settings.Value.ClientId,
+                                ClientSecret = auth0Settings.Value.ClientSecret,
+                                RefreshToken = refreshToken
+                            });
+
+                    if (!string.IsNullOrWhiteSpace(newIdToken.IdToken))
+                    {
+                        var newPrincipal = ValidateJwt(newIdToken.IdToken, auth0Settings);
+                        var identity = expClaim.Subject;
+                        identity.RemoveClaim(expClaim);
+                        identity.AddClaim(newPrincipal.FindFirst("exp"));
+
+                        // Remove existing id_token claim
+                        var tokenClaim = identity.FindFirst("id_token");
+                        if (tokenClaim != null)
+                        {
+                            identity.RemoveClaim(tokenClaim);
+                        }
+
+                        // Add the new token claim
+                        identity.AddClaim(new Claim("id_token", newIdToken.IdToken));
+
+                        // now issue a new cookie
+                        context.ShouldRenew = true;
+                        shouldReject = false;
+                    }
+                }
+            }
+
+            if (shouldReject)
+            {
+                context.RejectPrincipal();
+
+                // optionally clear cookie
+                await context.HttpContext.Authentication.SignOutAsync("Auth0");
+            }
+        }
+
+        private static ClaimsPrincipal ValidateJwt(string encodedJwt, IOptions<Auth0Settings> auth0Settings)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                //IssuerSigningKey = new SymmetricSecurityKey(Base64UrlEncoder.DecodeBytes(auth0Settings.Value.ClientSecret)),
+                ValidIssuer = $"https://{auth0Settings.Value.Domain}/",
+                ValidAudience = auth0Settings.Value.ClientId,
+                // no real signature validation, we are trusting the delegation endpoint here.
+                // Is that correct?
+                SignatureValidator =
+                    (token, parameters) =>
+                        new JwtSecurityTokenHandler().ReadJwtToken(token)
+            };
+
+            SecurityToken securityToken;
+
+            var newPrincipal = new JwtSecurityTokenHandler().ValidateToken(
+                encodedJwt,
+                tokenValidationParameters,
+                out securityToken);
+
+            return newPrincipal;
+        }
+    }
+}
+
