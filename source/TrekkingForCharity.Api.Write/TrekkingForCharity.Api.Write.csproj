@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Algolia.Search" Version="5.1.0" />
     <PackageReference Include="FluentValidation" Version="8.0.100" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="7.5.0.6605">

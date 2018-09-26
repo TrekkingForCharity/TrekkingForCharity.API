@@ -6,6 +6,7 @@
 
 using System;
 using System.Linq;
+using Algolia.Search;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -19,6 +20,7 @@ using TrekkingForCharity.Api.Core.Infrastructure;
 using TrekkingForCharity.Api.Write.CommandResult;
 using TrekkingForCharity.Api.Write.Commands;
 using TrekkingForCharity.Api.Write.Models;
+using Newtonsoft.Json.Linq;
 
 namespace TrekkingForCharity.Api.Write.CommandExecutors
 {
@@ -26,23 +28,20 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
         Result<CreateTrekCommandResult, ErrorData>>
     {
         private readonly ICurrentUserAccessor _currentUserAccessor;
-        private readonly ISlugHelper _slugifyHelper;
-        private readonly CloudTable _trekSlugTable;
+        private readonly Index _trekIndex;
         private readonly CloudTable _trekTable;
 
         public CreateTrekCommandExecutor(
             IValidator<CreateTrekCommand> validator,
-            CloudTable trekSlugTable,
-            ISlugHelper slugifyHelper,
             CloudTable trekTable,
-            ICurrentUserAccessor currentUserAccessor)
+            ICurrentUserAccessor currentUserAccessor,
+            Index trekIndex)
             : base(validator)
         {
-            this._trekSlugTable = trekSlugTable ?? throw new ArgumentNullException(nameof(trekSlugTable));
-            this._slugifyHelper = slugifyHelper ?? throw new ArgumentNullException(nameof(slugifyHelper));
             this._trekTable = trekTable ?? throw new ArgumentNullException(nameof(trekTable));
             this._currentUserAccessor =
                 currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
+            this._trekIndex = trekIndex ?? throw new ArgumentNullException(nameof(trekIndex));
         }
 
         protected override Result<CreateTrekCommandResult, ErrorData> CreateFailedResult(ErrorData errorData)
@@ -53,7 +52,6 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
         protected override async Task<Result<CreateTrekCommandResult, ErrorData>> Executor()
         {
             await this._trekTable.CreateIfNotExistsAsync();
-            await this._trekSlugTable.CreateIfNotExistsAsync();
 
             var currentUserMaybe = await this._currentUserAccessor.GetCurrentUser();
             if (currentUserMaybe.HasNoValue)
@@ -64,17 +62,6 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
             }
 
             var currentUser = currentUserMaybe.Value;
-
-            var slug = this._slugifyHelper.GenerateSlug(this.Command.Name);
-
-            var slugResult = await this._trekSlugTable.RetrieveWithResult<TrekSlug>(slug.First().ToString(), slug);
-
-            if (slugResult.IsSuccess)
-            {
-                return Result.Fail<CreateTrekCommandResult, ErrorData>(new ErrorData(
-                    ErrorCodes.TrekNameInUse,
-                    "The name is used by another trek"));
-            }
 
             var trek = new Trek(this.Command.Name, this.Command.Description, this.Command.BannerImage,
                 this.Command.WhenToStart, currentUser.UserId);
@@ -87,17 +74,14 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
                     "Something went wrong when trying to create the trek"));
             }
 
-            var trekSlug = new TrekSlug(slug.First(), slug, $"{trek.PartitionKey}¬{trek.RowKey}");
-            result = await this._trekSlugTable.CreateEntity(trekSlug);
-            if (result.IsFailure)
-            {
-                return Result.Fail<CreateTrekCommandResult, ErrorData>(new ErrorData(
-                    ErrorCodes.Creation,
-                    "Something went wrong when trying to create the trek"));
-            }
+            await this._trekIndex.AddObjectAsync(JObject.FromObject(new {
+                objectId = $"{trek.PartitionKey}¬{trek.RowKey}",
+                trekId = trek.RowKey,
+                userId = trek.PartitionKey      
+            }));
 
             return Result.Ok<CreateTrekCommandResult, ErrorData>(
-                new CreateTrekCommandResult(Guid.Parse(trek.RowKey), trekSlug.RowKey));
+                new CreateTrekCommandResult(Guid.Parse(trek.RowKey)));
         }
     }
 }

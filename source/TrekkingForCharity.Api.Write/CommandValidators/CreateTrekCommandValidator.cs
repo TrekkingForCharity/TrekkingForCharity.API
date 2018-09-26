@@ -22,34 +22,12 @@ namespace TrekkingForCharity.Api.Write.CommandValidators
 {
     public class CreateTrekCommandValidator : AbstractValidator<CreateTrekCommand>
     {
-        private readonly CloudTable _trekSlugTable;
-        private readonly ISlugHelper _slugHelper;
-
-        public CreateTrekCommandValidator(CloudTable trekSlugTable, ISlugHelper slugHelper)
-        {
-            this._trekSlugTable = trekSlugTable ?? throw new ArgumentNullException(nameof(trekSlugTable));
-            this._slugHelper = slugHelper ?? throw new ArgumentNullException(nameof(slugHelper));
-
+        public CreateTrekCommandValidator()
+        {        
             this.RuleFor(x => x.Name)
                 .NotEmpty()
-                .WithErrorCode(ValidationCodes.FieldIsRequired)
-                .CustomAsync(this.UniqueTrekName);
+                .WithErrorCode(ValidationCodes.FieldIsRequired);
             this.RuleFor(x => x.Description).NotEmpty().WithErrorCode(ValidationCodes.FieldIsRequired);
-        }
-
-        private async Task UniqueTrekName(string name, CustomContext context, CancellationToken cancellationToken)
-        {
-            var generatedSlug = this._slugHelper.GenerateSlug(name);
-            var trekSlugResult = await this._trekSlugTable.RetrieveWithResult<TrekSlug>(generatedSlug.First().ToString(), generatedSlug);
-            if (trekSlugResult.IsSuccess)
-            {
-                var validationFailure =
-                    new ValidationFailure(context.PropertyName, "Trek name not unique")
-                    {
-                        ErrorCode = ValidationCodes.TrekNameInUse
-                    };
-                context.AddFailure(validationFailure);
-            }
         }
     }
 }

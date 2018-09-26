@@ -38,11 +38,15 @@ namespace TrekkingForCharity.Api.App.CommandEndpoints
 
                 var currentUserAccessor = new CurrentUserAccessor(config, req);
 
-                var slugifyHelper = new SlugHelper();
-                var validator = new CreateTrekCommandValidator(trekSlugTable, slugifyHelper);
+                var algoliaClient = AlgoliaClientAccessor.GetAlgoliaClient(config);
 
-                var executor = new CreateTrekCommandExecutor(validator, trekSlugTable, slugifyHelper, trekTable,
-                    currentUserAccessor);
+                var trekIndexName = config["Algolia:TrekIndex"];
+
+                var trekIndex = algoliaClient.InitIndex(trekIndexName);
+
+                var validator = new CreateTrekCommandValidator();
+
+                var executor = new CreateTrekCommandExecutor(validator, trekTable, currentUserAccessor, trekIndex);
 
                 var cmd = await req.GetCommand<CreateTrekCommand>();
 

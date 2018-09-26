@@ -27,9 +27,7 @@ namespace TrekkingForCharity.Api.App.Infrastructure
 
         public async Task<Maybe<CurrentUser>> GetCurrentUser()
         {
-            var cert = this._config["Cert"];
-
-            var principleMaybe = await this._requestMessage.Headers.GetCurrentPrinciple(cert);
+            var principleMaybe = await this._requestMessage.Headers.GetCurrentPrinciple(this._config);
             if (principleMaybe.HasNoValue)
             {
                 return Maybe<CurrentUser>.Nothing;

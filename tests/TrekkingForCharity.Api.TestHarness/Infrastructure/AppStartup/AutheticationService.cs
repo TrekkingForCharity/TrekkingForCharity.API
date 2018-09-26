@@ -66,37 +66,34 @@ namespace TrekkingForCharity.Api.TestHarness.Infrastructure.AppStartup
                         // handle the logout redirection
                         OnRedirectToIdentityProviderForSignOut = OnRedirectToIdentityProviderForSignOut,
                         OnRedirectToIdentityProvider = OnRedirectToIdentityProvider,
-                        OnTicketReceived = context =>
-                        {
-                            // Get the ClaimsIdentity
-                            var identity = context.Principal.Identity as ClaimsIdentity;
-                            if (identity != null)
-                            {
-                                // Check if token names are stored in Properties
-                                if (context.Properties.Items.ContainsKey(".TokenNames"))
-                                {
-                                    // Token names a semicolon separated
-                                    string[] tokenNames = context.Properties.Items[".TokenNames"].Split(';');
-
-                                    // Add each token value as Claim
-                                    foreach (var tokenName in tokenNames)
-                                    {
-                                        // Tokens are stored in a Dictionary with the Key ".Token.<token name>"
-                                        string tokenValue = context.Properties.Items[$".Token.{tokenName}"];
-
-                                        identity.AddClaim(new Claim(tokenName, tokenValue));
-                                    }
-                                }
-                            }
-
-                            return Task.FromResult(0);
-                        }
-
-
+                        OnTicketReceived = OnTicketReceived
                     };
                 });
 
             return services;
+        }
+
+        private static Task OnTicketReceived(TicketReceivedContext context)
+        {
+            if (!(context.Principal.Identity is ClaimsIdentity identity))
+            {
+                return Task.FromResult(0);
+            }
+
+            if (!context.Properties.Items.ContainsKey(".TokenNames"))
+            {
+                return Task.FromResult(0);
+            }
+
+            var tokenNames = context.Properties.Items[".TokenNames"].Split(';');
+
+            foreach (var tokenName in tokenNames)
+            {
+                var tokenValue = context.Properties.Items[$".Token.{tokenName}"];
+                identity.AddClaim(new Claim(tokenName, tokenValue));
+            }
+
+            return Task.FromResult(0);
         }
 
         private static Task OnRedirectToIdentityProviderForSignOut(RedirectContext context)
@@ -141,7 +138,7 @@ namespace TrekkingForCharity.Api.TestHarness.Infrastructure.AppStartup
             var expClaim = context.Principal.FindFirst(c => c.Type == "expires_at");
 
             // Unix timestamp is seconds past epoch
-            var validTo = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(int.Parse(expClaim.Value));
+            var validTo = DateTimeOffset.Parse(expClaim.Value);
 
             if (validTo > DateTimeOffset.UtcNow)
             {

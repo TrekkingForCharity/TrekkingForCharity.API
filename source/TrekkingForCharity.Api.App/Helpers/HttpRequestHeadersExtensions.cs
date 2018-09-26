@@ -12,6 +12,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using MaybeMonad;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -23,13 +24,22 @@ namespace TrekkingForCharity.Api.App.Helpers
         private static OpenIdConnectConfiguration _config;
         private static IConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
 
-        private static readonly string ISSUER = "https://trekkingforcharity.eu.auth0.com/";
-        private static readonly string AUDIENCE = "https://api.trekkingforcharity.org";
+        private static string _issuer;
+        private static string _audience;
 
         public static async Task<Maybe<JwtSecurityToken>> GetCurrentPrinciple(
-            this HttpRequestHeaders httpRequestHeaders,
-            string certData)
+            this HttpRequestHeaders httpRequestHeaders, IConfigurationRoot config)
         {
+            if (string.IsNullOrWhiteSpace(_issuer))
+            {
+                _issuer = config["Auth0:Issuer"];
+            }
+
+            if (string.IsNullOrWhiteSpace(_audience))
+            {
+                _audience = config["Auth0:Audience"];
+            }
+
             if (!httpRequestHeaders.Contains("Authorization"))
             {
                 return Maybe<JwtSecurityToken>.Nothing;
@@ -51,12 +61,12 @@ namespace TrekkingForCharity.Api.App.Helpers
 
         private static async Task<Maybe<JwtSecurityToken>> ValidateToken(string jwtToken)
         {
-            var documentRetriever = new HttpDocumentRetriever {RequireHttps = ISSUER.StartsWith("https://")};
+            var documentRetriever = new HttpDocumentRetriever {RequireHttps = _issuer.StartsWith("https://")};
 
             if (_configurationManager == null)
             {
                 _configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                    $"{ISSUER}.well-known/openid-configuration",
+                    $"{_issuer}.well-known/openid-configuration",
                     new OpenIdConnectConfigurationRetriever(),
                     documentRetriever
                 );
@@ -70,9 +80,9 @@ namespace TrekkingForCharity.Api.App.Helpers
             var validationParameter = new TokenValidationParameters
             {
                 RequireSignedTokens = true,
-                ValidAudience = AUDIENCE,
+                ValidAudience = _audience,
                 ValidateAudience = true,
-                ValidIssuer = ISSUER,
+                ValidIssuer = _issuer,
                 ValidateIssuer = true,
                 ValidateIssuerSigningKey = true,
                 ValidateLifetime = true,

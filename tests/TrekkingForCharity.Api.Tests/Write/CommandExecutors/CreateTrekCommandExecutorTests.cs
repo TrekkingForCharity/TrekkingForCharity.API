@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Algolia.Search;
 using FluentValidation;
 using FluentValidation.Results;
 using MaybeMonad;
@@ -32,14 +33,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var validator = new Mock<IValidator<CreateTrekCommand>>();
             validator.Setup(x => x.ValidateAsync(It.IsAny<CreateTrekCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => new ValidationResult());
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
-            trekSlugTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
-            {
-                HttpStatusCode = 204
-            });
 
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
             trekTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
             {
@@ -48,9 +42,11 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
             currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
+            var alogo = new Mock<AlgoliaClient>("applicationId", "apiKey", null, null);
+            var index = new Mock<Index>(alogo.Object, "");
+
             var
-                executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
-                    trekTable.Object, currentUserAccessor.Object);
+                executor = new CreateTrekCommandExecutor(validator.Object, trekTable.Object, currentUserAccessor.Object, index.Object);
 
             var cmd = new CreateTrekCommand();
 
@@ -70,18 +66,14 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
                 {
                     new ValidationFailure("prop", "error")
                 }));
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
-
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
             currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
+            var index = new Mock<Index>();
             var
-                executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
-                    trekTable.Object, currentUserAccessor.Object);
+                executor = new CreateTrekCommandExecutor(validator.Object, trekTable.Object, currentUserAccessor.Object, index.Object);
 
             var cmd = new CreateTrekCommand();
 
@@ -99,18 +91,15 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
         {
             var validator = new Mock<IValidator<CreateTrekCommand>>();
 
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
-
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
             currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
+            var index = new Mock<Index>();
+
             var
-                executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
-                    trekTable.Object, currentUserAccessor.Object);
+                executor = new CreateTrekCommandExecutor(validator.Object, trekTable.Object, currentUserAccessor.Object, index.Object);
 
             var executionResult = await executor.Execute();
 
@@ -124,23 +113,16 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var validator = new Mock<IValidator<CreateTrekCommand>>();
             validator.Setup(x => x.ValidateAsync(It.IsAny<CreateTrekCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => new ValidationResult());
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
-            trekSlugTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
-            {
-                HttpStatusCode = 200,
-                Result = new TrekSlug()
-            });
 
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
             currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
+            var index = new Mock<Index>();
+
             var
-                executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
-                    trekTable.Object, currentUserAccessor.Object);
+                executor = new CreateTrekCommandExecutor(validator.Object, trekTable.Object, currentUserAccessor.Object, index.Object);
 
             var cmd = new CreateTrekCommand();
 
@@ -158,18 +140,16 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var validator = new Mock<IValidator<CreateTrekCommand>>();
             validator.Setup(x => x.ValidateAsync(It.IsAny<CreateTrekCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => new ValidationResult());
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
 
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
 
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
             currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe<CurrentUser>.Nothing);
 
+            var index = new Mock<Index>();
+
             var
-                executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
-                    trekTable.Object, currentUserAccessor.Object);
+                executor = new CreateTrekCommandExecutor(validator.Object, trekTable.Object, currentUserAccessor.Object, index.Object);
 
             var cmd = new CreateTrekCommand();
 
@@ -194,14 +174,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var validator = new Mock<IValidator<CreateTrekCommand>>();
             validator.Setup(x => x.ValidateAsync(It.IsAny<CreateTrekCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => new ValidationResult());
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
-            trekSlugTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
-            {
-                HttpStatusCode = 204
-            });
 
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
             trekTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
             {
@@ -210,9 +183,10 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
             currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
+            var index = new Mock<Index>();
+
             var
-                executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
-                    trekTable.Object, currentUserAccessor.Object);
+                executor = new CreateTrekCommandExecutor(validator.Object, trekTable.Object, currentUserAccessor.Object, index.Object);
 
             var cmd = new CreateTrekCommand();
 
@@ -230,14 +204,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var validator = new Mock<IValidator<CreateTrekCommand>>();
             validator.Setup(x => x.ValidateAsync(It.IsAny<CreateTrekCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => new ValidationResult());
-            var trekSlugTable = new Mock<CloudTable>(new Uri("https://trekslug.example.com"));
-            trekSlugTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
-            {
-                HttpStatusCode = 200
-            });
 
-            var slugHelper = new Mock<ISlugHelper>();
-            slugHelper.Setup(x => x.GenerateSlug(It.IsAny<string>())).Returns(new string('*', 10));
             var trekTable = new Mock<CloudTable>(new Uri("https://trek.example.com"));
             trekTable.Setup(x => x.ExecuteAsync(It.IsAny<TableOperation>())).ReturnsAsync(() => new TableResult
             {
@@ -246,9 +213,10 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandExecutors
             var currentUserAccessor = new Mock<ICurrentUserAccessor>();
             currentUserAccessor.Setup(x => x.GetCurrentUser()).ReturnsAsync(() => Maybe.From(new CurrentUser("abc")));
 
+            var index = new Mock<Index>();
+
             var
-                executor = new CreateTrekCommandExecutor(validator.Object, trekSlugTable.Object, slugHelper.Object,
-                    trekTable.Object, currentUserAccessor.Object);
+                executor = new CreateTrekCommandExecutor(validator.Object, trekTable.Object, currentUserAccessor.Object, index.Object);
 
             var cmd = new CreateTrekCommand();
 

@@ -114,10 +114,23 @@ Task("__Publish")
     
     MSBuild("../source/TrekkingForCharity.Api.App/TrekkingForCharity.Api.App.csproj", msbuildSettings);
 
+    msbuildSettings = new MSBuildSettings {
+      Verbosity = Verbosity.Minimal,
+      ToolVersion = MSBuildToolVersion.VS2017,
+      Configuration = "Release",
+      PlatformTarget = PlatformTarget.MSIL
+    };
+    msbuildSettings.WithProperty("OutDir", MakeAbsolute(clientPublishPath).ToString());
+    
+    MSBuild("../source/TrekkingForCharity.Api.Client/TrekkingForCharity.Api.Client.csproj", msbuildSettings);
+
   });
 Task("__Package")
   .Does(() => {
-      Zip(appPublishPath, releasePath + File("TrekkingForCharity.Api.App.zip"));      
+      Zip(appPublishPath, releasePath + File("TrekkingForCharity.Api.App.zip"));   
+
+      CopyFiles("../source/TrekkingForCharity.Api.Client/bin/Release/*.nupkg", releasePath);
+
       if (AppVeyor.IsRunningOnAppVeyor) {
         AppVeyor.UploadArtifact(releasePath + File("TrekkingForCharity.Api.App.zip"));        
       }

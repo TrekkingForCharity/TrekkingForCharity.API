@@ -10,14 +10,11 @@ namespace TrekkingForCharity.Api.Write.CommandResult
 {
     public class CreateTrekCommandResult
     {
-        public CreateTrekCommandResult(Guid trekId, string slug)
+        public CreateTrekCommandResult(Guid trekId)
         {
             this.TrekId = trekId;
-            this.Slug = slug;
         }
 
         public Guid TrekId { get; }
-
-        public string Slug { get; }
     }
 }
