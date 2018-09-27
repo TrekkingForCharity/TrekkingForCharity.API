@@ -11,13 +11,9 @@ namespace TrekkingForCharity.Api.Write.Commands
 {
     public class UpdateTrekCommand : ICommand
     {
-        public Guid Id { get; set; }
-
         public string Description { get; set; }
 
         public long WhenToStart { get; set; }
-
-        public string BannerImage { get; set; }
 
         public Guid TrekId { get; set; }
     }

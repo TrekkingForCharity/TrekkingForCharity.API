@@ -4,7 +4,6 @@
 // TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
-using System;
 using System.Threading.Tasks;
 using Algolia.Search;
 using FluentValidation;
@@ -21,23 +20,21 @@ using TrekkingForCharity.Api.Write.Models;
 
 namespace TrekkingForCharity.Api.Write.CommandExecutors
 {
-    public class UpdateTrekCommandExecutor : BaseCommandExecutor<UpdateTrekCommand, ResultWithError<ErrorData>>
+    public class
+        UpdateTrekImageCommandExecutor : BaseCommandExecutor<UpdateTrekImageCommand, ResultWithError<ErrorData>>
     {
         private readonly ICurrentUserAccessor _currentUserAccessor;
-        private readonly CloudTable _trekTable;
         private readonly Index _trekIndex;
+        private readonly CloudTable _trekTable;
 
-        public UpdateTrekCommandExecutor(
-            IValidator<UpdateTrekCommand> validator,
-            ICurrentUserAccessor currentUserAccessor,
-            CloudTable trekTable,
-            Index trekIndex)
+        public UpdateTrekImageCommandExecutor(
+            IValidator<UpdateTrekImageCommand> validator,
+            ICurrentUserAccessor currentUserAccessor, CloudTable trekTable, Index trekIndex)
             : base(validator)
         {
-            this._currentUserAccessor =
-                currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
-            this._trekTable = trekTable ?? throw new ArgumentNullException(nameof(trekTable));
-            this._trekIndex = trekIndex ?? throw new ArgumentNullException(nameof(trekIndex));
+            this._currentUserAccessor = currentUserAccessor;
+            this._trekTable = trekTable;
+            this._trekIndex = trekIndex;
         }
 
         protected override ResultWithError<ErrorData> CreateFailedResult(ErrorData errorData)
@@ -70,7 +67,7 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
 
             var trek = result.Value;
 
-            trek.UpdateBasicDetails(this.Command.Description, this.Command.WhenToStart);
+            trek.UpdateImageUri(this.Command.ImageUri);
 
             var updateResult = await this._trekTable.UpdateEntity(trek);
 
@@ -83,7 +80,7 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
             await this._trekIndex.AddObjectAsync(JObject.FromObject(new
             {
                 objectId = $"{trek.PartitionKey}¬{trek.RowKey}",
-                whenToStart = trek.WhenToStart
+                imageUri = trek.ImageUri
             }));
 
             return ResultWithError.Ok<ErrorData>();

@@ -16,7 +16,5 @@ namespace TrekkingForCharity.Api.Write.Commands
         public string Description { get; set; }
 
         public long WhenToStart { get; set; }
-
-        public string BannerImage { get; set; }
     }
 }

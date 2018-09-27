@@ -9,11 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Write\CommandExecutors\CreateTrekCommandExecutorTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\..\source\SharedFiles\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="..\..\source\SharedFiles\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Write\CommandExecutors\CreateTrekCommandExecutorTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

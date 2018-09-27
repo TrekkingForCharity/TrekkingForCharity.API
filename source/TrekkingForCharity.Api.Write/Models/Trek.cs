@@ -15,14 +15,13 @@ namespace TrekkingForCharity.Api.Write.Models
         {
         }
 
-        public Trek(string name, string description, string bannerImage, long whenToStart,
+        public Trek(string name, string description, long whenToStart,
             string userRef)
         {
             this.RowKey = Guid.NewGuid().ToString();
             this.PartitionKey = userRef;
             this.Name = name;
             this.Description = description;
-            this.BannerImage = bannerImage;
             this.WhenToStart = whenToStart;
         }
 
@@ -30,22 +29,21 @@ namespace TrekkingForCharity.Api.Write.Models
 
         public string Description { get; set; }
 
-        public string BannerImage { get; set; }
+        public string ImageUri { get; set; }
 
         public long WhenToStart { get; set; }
 
         public long? WhenStarted { get; set; }
 
-        public void UpdateBasicDetails(string description, string bannerImage, long whenToStart)
+        public void UpdateBasicDetails(string description, long whenToStart)
         {
             this.Description = description;
             this.WhenToStart = whenToStart;
-            this.BannerImage = bannerImage;
         }
 
-        public void UpdateBannerImage(string bannerImage)
+        public void UpdateImageUri(string imageUri)
         {
-            this.BannerImage = bannerImage;
+            this.ImageUri = imageUri;
         }
 
         public void Start()

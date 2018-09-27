@@ -63,8 +63,7 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
 
             var currentUser = currentUserMaybe.Value;
 
-            var trek = new Trek(this.Command.Name, this.Command.Description, this.Command.BannerImage,
-                this.Command.WhenToStart, currentUser.UserId);
+            var trek = new Trek(this.Command.Name, this.Command.Description, this.Command.WhenToStart, currentUser.UserId);
 
             var result = await this._trekTable.CreateEntity(trek);
             if (result.IsFailure)
@@ -77,7 +76,8 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
             await this._trekIndex.AddObjectAsync(JObject.FromObject(new {
                 objectId = $"{trek.PartitionKey}¬{trek.RowKey}",
                 trekId = trek.RowKey,
-                userId = trek.PartitionKey      
+                userId = trek.PartitionKey,
+                whenToStart = trek.WhenToStart
             }));
 
             return Result.Ok<CreateTrekCommandResult, ErrorData>(
