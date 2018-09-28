@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Compile Remove="Write\CommandExecutors\CreateTrekCommandExecutorTests.cs" />
+    <Compile Remove="Write\CommandExecutors\UpdateTrekCommandExecutorTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +23,7 @@
 
   <ItemGroup>
     <None Include="Write\CommandExecutors\CreateTrekCommandExecutorTests.cs" />
+    <None Include="Write\CommandExecutors\UpdateTrekCommandExecutorTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

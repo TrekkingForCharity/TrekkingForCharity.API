@@ -14,7 +14,6 @@ var clientPublishPath = publishPath + Directory("client");
 var releasePath = buildPath + Directory("release");
 var clientPath = buildPath + Directory("client");
 var testPath = buildPath + Directory("test");
-var codeGenPath = buildPath + Directory("code-gen");
 
 string version, branch;
 
@@ -30,15 +29,10 @@ Task("__Clean")
       CleanDirectories("../source/**/obj");
       CleanDirectories("../tests/**/bin");
       CleanDirectories("../tests/**/obj");
-      CleanDirectories("../source/TrekkingForCharity.Api.Client/Executors/Commands");
-      CleanDirectories("../source/TrekkingForCharity.Api.Client/Executors/CommandResults");
-
+      
       CreateDirectory(publishPath);
       CreateDirectory(releasePath);
       CreateDirectory(testPath);
-      CreateDirectory(codeGenPath);
-      CreateDirectory("../source/TrekkingForCharity.Api.Client/Executors/Commands");
-      CreateDirectory("../source/TrekkingForCharity.Api.Client/Executors/CommandResults");
   });
 Task("__Versioning")
   .Does(() => {
@@ -64,19 +58,6 @@ Task("__NugetRestore")
   .Does(() => {
       DotNetCoreRestore("../TrekkingForCharity.Api.sln");
   });
-
-Task("__GenerateApiFiles")
-	.Does(() => {
-		var settings = new DotNetCoreRunSettings {
-         Configuration = "Release",        
-     };
-
-     DotNetCoreRun("../source/TrekkingForCharity.Api.CodeGeneration/TrekkingForCharity.Api.CodeGeneration.csproj", MakeAbsolute(codeGenPath).ToString(), settings);
-
-
-     CopyFiles("./build-artifacts/code-gen/commands/*.cs", "../source/TrekkingForCharity.Api.Client/Executors/Commands");
-     CopyFiles("./build-artifacts/code-gen/command-results/*.cs", "../source/TrekkingForCharity.Api.Client/Executors/CommandResults");
-	});
 
 Task("__Test")
   .Does(() => {
@@ -114,22 +95,10 @@ Task("__Publish")
     
     MSBuild("../source/TrekkingForCharity.Api.App/TrekkingForCharity.Api.App.csproj", msbuildSettings);
 
-    msbuildSettings = new MSBuildSettings {
-      Verbosity = Verbosity.Minimal,
-      ToolVersion = MSBuildToolVersion.VS2017,
-      Configuration = "Release",
-      PlatformTarget = PlatformTarget.MSIL
-    };
-    msbuildSettings.WithProperty("OutDir", MakeAbsolute(clientPublishPath).ToString());
-    
-    MSBuild("../source/TrekkingForCharity.Api.Client/TrekkingForCharity.Api.Client.csproj", msbuildSettings);
-
   });
 Task("__Package")
   .Does(() => {
       Zip(appPublishPath, releasePath + File("TrekkingForCharity.Api.App.zip"));   
-
-      CopyFiles("../source/TrekkingForCharity.Api.Client/bin/Release/*.nupkg", releasePath);
 
       if (AppVeyor.IsRunningOnAppVeyor) {
         AppVeyor.UploadArtifact(releasePath + File("TrekkingForCharity.Api.App.zip"));        
@@ -168,7 +137,6 @@ Task("Build")
   .IsDependentOn("__Clean")
   .IsDependentOn("__Versioning")
   .IsDependentOn("__NugetRestore")
-  .IsDependentOn("__GenerateApiFiles")
   .IsDependentOn("__Test")
   .IsDependentOn("__Publish")
   .IsDependentOn("__Package")

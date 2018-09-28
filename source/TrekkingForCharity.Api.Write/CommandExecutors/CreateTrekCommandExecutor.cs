@@ -5,13 +5,12 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System;
-using System.Linq;
-using Algolia.Search;
 using System.Threading.Tasks;
+using Algolia.Search;
 using FluentValidation;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json.Linq;
 using ResultMonad;
-using Slugify;
 using TrekkingForCharity.Api.Core;
 using TrekkingForCharity.Api.Core.Commands;
 using TrekkingForCharity.Api.Core.Constants;
@@ -20,7 +19,6 @@ using TrekkingForCharity.Api.Core.Infrastructure;
 using TrekkingForCharity.Api.Write.CommandResult;
 using TrekkingForCharity.Api.Write.Commands;
 using TrekkingForCharity.Api.Write.Models;
-using Newtonsoft.Json.Linq;
 
 namespace TrekkingForCharity.Api.Write.CommandExecutors
 {
@@ -63,7 +61,8 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
 
             var currentUser = currentUserMaybe.Value;
 
-            var trek = new Trek(this.Command.Name, this.Command.Description, this.Command.WhenToStart, currentUser.UserId);
+            var trek = new Trek(this.Command.Name, this.Command.Description, this.Command.WhenToStart,
+                currentUser.UserId);
 
             var result = await this._trekTable.CreateEntity(trek);
             if (result.IsFailure)
@@ -73,7 +72,8 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
                     "Something went wrong when trying to create the trek"));
             }
 
-            await this._trekIndex.AddObjectAsync(JObject.FromObject(new {
+            await this._trekIndex.AddObjectAsync(JObject.FromObject(new
+            {
                 objectId = $"{trek.PartitionKey}¬{trek.RowKey}",
                 trekId = trek.RowKey,
                 userId = trek.PartitionKey,

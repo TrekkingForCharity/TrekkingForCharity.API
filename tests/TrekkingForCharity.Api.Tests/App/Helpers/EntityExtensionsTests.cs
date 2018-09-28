@@ -24,13 +24,11 @@ namespace TrekkingForCharity.Api.Tests.App.Helpers
             var writeTrek = new Trek(
                 "Trek Name",
                 "Trek Description",
-                "Banner Image UrlKey",
                 DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                 "UserRef");
             writeTrek.Start();
             var readTrek = writeTrek.ToRead(slugHelper.Object);
             Assert.Equal(writeTrek.Description, readTrek.Description);
-            Assert.Equal(writeTrek.BannerImage, readTrek.BannerImage);
             Assert.Equal(writeTrek.Name, readTrek.Name);
             Assert.Equal(writeTrek.WhenToStart, readTrek.WhenToStart);
             Assert.Equal(writeTrek.WhenStarted, readTrek.WhenStarted);

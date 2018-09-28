@@ -41,7 +41,6 @@ namespace TrekkingForCharity.Api.App.CommandEndpoints
 
                 var cmd = await req.GetCommand<StartTrekCommand>();
 
-
                 var validationResult = await executor.ValidateAndSetCommand(cmd);
                 if (!validationResult.IsValid)
                 {

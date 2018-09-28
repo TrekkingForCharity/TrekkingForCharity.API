@@ -20,7 +20,7 @@ namespace TrekkingForCharity.Api.Read.Models
         public string Description { get; set; }
 
         [JsonProperty]
-        public string BannerImage { get; set; }
+        public string ImageUri { get; set; }
 
         [JsonProperty]
         public int Status { get; set; }

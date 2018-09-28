@@ -61,15 +61,14 @@ namespace TrekkingForCharity.Api.App.Helpers
 
         private static async Task<Maybe<JwtSecurityToken>> ValidateToken(string jwtToken)
         {
-            var documentRetriever = new HttpDocumentRetriever {RequireHttps = _issuer.StartsWith("https://")};
+            var documentRetriever = new HttpDocumentRetriever { RequireHttps = _issuer.StartsWith("https://") };
 
             if (_configurationManager == null)
             {
                 _configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                     $"{_issuer}.well-known/openid-configuration",
                     new OpenIdConnectConfigurationRetriever(),
-                    documentRetriever
-                );
+                    documentRetriever);
             }
 
             if (_config == null)

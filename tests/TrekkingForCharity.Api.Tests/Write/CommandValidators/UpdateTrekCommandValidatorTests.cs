@@ -23,7 +23,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
             var command = new UpdateTrekCommand
             {
                 Description = "Trek Description",
-                Id = trekId
+                TrekId = trekId
             };
             var result = validator.Validate(command);
             Assert.True(result.IsValid);
@@ -37,7 +37,7 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
             var command = new UpdateTrekCommand
             {
                 Description = "Trek Description",
-                Id = Guid.NewGuid()
+                TrekId = Guid.NewGuid()
             };
             var result = validator.Validate(command);
             Assert.True(result.IsValid);
@@ -74,11 +74,11 @@ namespace TrekkingForCharity.Api.Tests.Write.CommandValidators
             var command = new UpdateTrekCommand
             {
                 Description = "Trek Description",
-                Id = Guid.Empty
+                TrekId = Guid.Empty
             };
             var result = validator.Validate(command);
             Assert.False(result.IsValid);
-            Assert.Contains(result.Errors, o => o.PropertyName == "Id");
+            Assert.Contains(result.Errors, o => o.PropertyName == "TrekId");
         }
     }
 }

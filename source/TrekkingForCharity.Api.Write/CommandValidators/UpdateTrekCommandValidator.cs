@@ -16,7 +16,7 @@ namespace TrekkingForCharity.Api.Write.CommandValidators
         public UpdateTrekCommandValidator()
         {
             this.RuleFor(x => x.Description).NotEmpty().WithErrorCode(ValidationCodes.FieldIsRequired);
-            this.RuleFor(x => x.Id).NotEqual(Guid.Empty).WithErrorCode(ValidationCodes.FieldIsRequired);
+            this.RuleFor(x => x.TrekId).NotEqual(Guid.Empty).WithErrorCode(ValidationCodes.FieldIsRequired);
         }
     }
 }

@@ -42,7 +42,7 @@ namespace TrekkingForCharity.Api.App.Helpers
         {
             var readTrek = new Trek
             {
-                BannerImage = writeTrek.BannerImage,
+                ImageUri = writeTrek.ImageUri,
                 Description = writeTrek.Description,
                 Name = writeTrek.Name,
                 WhenStarted = writeTrek.WhenStarted,
