@@ -6,6 +6,7 @@
     <FileVersion>1.0.0</FileVersion>
     <Version>1.0.0</Version>
     <Configurations>Debug;Release;</Configurations>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

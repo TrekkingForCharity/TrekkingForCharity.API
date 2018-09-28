@@ -5,14 +5,13 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System;
-using Microsoft.WindowsAzure.Storage.Table;
 using TrekkingForCharity.Api.Core.Queries;
 
 namespace TrekkingForCharity.Api.Read.Queries
 {
     public class GetUpdatesForTrekQuery : IQuery
     {
-        public TableContinuationToken ContinuationToken { get; set; }
+        public string ContinuationToken { get; set; }
         public Guid TrekId { get; set; }
     }
 }

@@ -34,24 +34,48 @@ namespace TrekkingForCharity.Api.Core.Helpers
             return Result.Ok<T, string>(obj);
         }
 
-        public static async Task<Result<List<T>, string>> RetrieveWithResult<T>(this CloudTable cloudTable, string partitionKey)
-            where T : TableEntity
+        public static async Task<Result<List<T>, string>> RetrieveAllWithResult<T>(this CloudTable cloudTable, string partitionKey)
+            where T : ITableEntity, new()
         {
             var data = new List<T>();
-            var query = new TableQuery<DynamicTableEntity>()
+            var query = new TableQuery<T>()
                 .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
 
             TableContinuationToken continuationToken = null;
             do
             {
                 var page = await cloudTable.ExecuteQuerySegmentedAsync(query, continuationToken);
-                continuationToken = page.ContinuationToken;
-                data.AddRange(page.Results as List<T> ?? throw new InvalidOperationException());
+                
+                if (page != null && page.Results is List<T> dataSet)
+                {
+                    data.AddRange(dataSet);
+                    continuationToken = page.ContinuationToken;
+                }
+                else
+                {
+                    return Result.Fail<List<T>, string>("Failed to cycle over collection");
+                }
             }
             while (continuationToken != null);
 
 
             return Result.Ok<List<T>, string>(data);
+        }
+
+        public static async Task<Result<Tuple<List<T>, TableContinuationToken>, string>> RetrievePagedWithResult<T>(this CloudTable cloudTable, string partitionKey, TableContinuationToken continuationToken = null)
+            where T : ITableEntity, new()
+        {
+            var query = new TableQuery<T>()
+                .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
+
+            var page = await cloudTable.ExecuteQuerySegmentedAsync(query, continuationToken);
+            if (page != null && page.Results is List<T> dataSet)
+            {
+                return Result.Ok<Tuple<List<T>, TableContinuationToken>, string>(
+                    new Tuple<List<T>, TableContinuationToken>(dataSet, page.ContinuationToken));
+            }
+
+            return Result.Fail<Tuple<List<T>, TableContinuationToken>, string>("Failed to cycle over collection");
         }
 
         public static async Task<ResultWithError<string>> CreateEntity<T>(this CloudTable cloudTable, T entity)

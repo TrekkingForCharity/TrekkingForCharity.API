@@ -4,12 +4,19 @@
 // TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
+using System.Collections.Generic;
 using TrekkingForCharity.Api.Core.Queries;
+using TrekkingForCharity.Api.Read.Models;
 
-namespace TrekkingForCharity.Api.Read.Queries
+namespace TrekkingForCharity.Api.Read.QueryResults
 {
-    public class GetTrekBySlugQuery : IQuery
+    public class GetWaypointsForTrekQueryResult : IQueryResult
     {
-        public string Slug { get; set; }
+        public GetWaypointsForTrekQueryResult(IList<Waypoint> waypoints)
+        {
+            this.Waypoints = waypoints;
+        }
+
+        public IList<Waypoint> Waypoints { get; }
     }
 }

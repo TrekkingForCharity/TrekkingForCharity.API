@@ -23,9 +23,6 @@ namespace TrekkingForCharity.Api.Read.Models
         public string ImageUri { get; set; }
 
         [JsonProperty]
-        public int Status { get; set; }
-
-        [JsonProperty]
         public long WhenToStart { get; set; }
 
         [JsonProperty]

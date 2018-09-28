@@ -1,4 +1,4 @@
-﻿// Copyright 2017 Trekking for Charity
+// Copyright 2017 Trekking for Charity
 // This file is part of TrekkingForCharity.Api.
 // TrekkingForCharity.Api is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -19,28 +19,27 @@ using TrekkingForCharity.Api.Read.QueryResults;
 
 namespace TrekkingForCharity.Api.Read.QueryProcessors
 {
-    public class GetTreksForUserQueryProcessor : BaseQueryProcessor<GetTreksForUserQuery, GetTreksForUserQueryResult>
+    public class GetWaypointsForTrekQueryProcessor : BaseQueryProcessor<GetWaypointsForTrekQuery, GetWaypointsForTrekQueryResult>
     {
-        private readonly CloudTable _trekTable;
+        private readonly CloudTable _waypointTable;
 
-        public GetTreksForUserQueryProcessor(IValidator<GetTreksForUserQuery> validator, CloudTable trekTable) :
-            base(validator)
+        public GetWaypointsForTrekQueryProcessor(IValidator<GetWaypointsForTrekQuery> validator, CloudTable waypointTable) : base(validator)
         {
-            this._trekTable = trekTable ?? throw new ArgumentNullException(nameof(trekTable));
+            this._waypointTable = waypointTable ?? throw new ArgumentNullException(nameof(waypointTable));
         }
 
-        protected override async Task<Result<GetTreksForUserQueryResult, ErrorData>> Processor()
+        protected override async Task<Result<GetWaypointsForTrekQueryResult, ErrorData>> Processor()
         {
-            var trekResult = await this._trekTable.RetrieveWithResult<Trek>(this.Query.UserId);
+            var waypointResult = await this._waypointTable.RetrieveAllWithResult<Waypoint>(this.Query.TrekId.ToString());
 
-            if (trekResult.IsFailure)
+            if (waypointResult.IsFailure)
             {
-                return Result.Fail<GetTreksForUserQueryResult, ErrorData>(new ErrorData(ErrorCodes.TrekNotFound,
+                return Result.Fail<GetWaypointsForTrekQueryResult, ErrorData>(new ErrorData(ErrorCodes.WaypointNotFound,
                     ""));
             }
 
-            return Result.Ok<GetTreksForUserQueryResult, ErrorData>(
-                new GetTreksForUserQueryResult(trekResult.Value));
+            return Result.Ok<GetWaypointsForTrekQueryResult, ErrorData>(
+                new GetWaypointsForTrekQueryResult(waypointResult.Value));
         }
     }
 }

@@ -5,7 +5,6 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System.Collections.Generic;
-using Microsoft.WindowsAzure.Storage.Table;
 using TrekkingForCharity.Api.Core.Queries;
 using TrekkingForCharity.Api.Read.Models;
 
@@ -13,13 +12,18 @@ namespace TrekkingForCharity.Api.Read.QueryResults
 {
     public class GetUpdatesForTrekQueryResult : IQueryResult
     {
-        public GetUpdatesForTrekQueryResult(TableContinuationToken continuationToken, IList<Update> updates)
+        public GetUpdatesForTrekQueryResult(IList<Update> updates)
+        {
+            this.Updates = updates;
+        }
+
+        public GetUpdatesForTrekQueryResult(IList<Update> updates, string continuationToken)
         {
             this.ContinuationToken = continuationToken;
             this.Updates = updates;
         }
 
-        public TableContinuationToken ContinuationToken { get; }
+        public string ContinuationToken { get; }
         public IList<Update> Updates { get; }
     }
 }

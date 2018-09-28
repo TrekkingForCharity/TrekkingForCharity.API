@@ -17,5 +17,7 @@ namespace TrekkingForCharity.Api.Core.Constants
         public const string NotAuthenticated = "ERR-000006";
         public const string CommandIsNotSet = "ERR-000007";
         public const string Deletion = "ERR-000008";
+        public const string UpdatesNotFound = "ERR-000009";
+        public const string QueryIsNotSet = "ERR-000010";
     }
 }
