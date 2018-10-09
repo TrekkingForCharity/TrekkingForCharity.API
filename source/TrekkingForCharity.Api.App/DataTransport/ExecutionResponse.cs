@@ -19,12 +19,12 @@ namespace TrekkingForCharity.Api.App.DataTransport
         {
         }
 
-        private ExecutionResponse(bool suceeded, object successReference = null, string errorCode = null, string failMessage = null)
+        private ExecutionResponse(bool succeeded, object successReference = null, string errorCode = null, string failMessage = null)
         {
-            this.FailMessage = suceeded ? string.Empty : failMessage ?? string.Empty;
-            this.ErrorCode = suceeded ? string.Empty : errorCode ?? string.Empty;
-            this.Result = suceeded ? successReference : null;
-            this.Success = suceeded;
+            this.FailMessage = succeeded ? string.Empty : failMessage ?? string.Empty;
+            this.ErrorCode = succeeded ? string.Empty : errorCode ?? string.Empty;
+            this.Result = succeeded ? successReference : null;
+            this.Success = succeeded;
             this._errors = new List<ValidationError>();
         }
 

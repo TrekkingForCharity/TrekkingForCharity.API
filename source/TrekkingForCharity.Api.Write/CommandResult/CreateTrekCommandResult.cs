@@ -5,10 +5,11 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using System;
+using TrekkingForCharity.Api.Core.Commands;
 
 namespace TrekkingForCharity.Api.Write.CommandResult
 {
-    public class CreateTrekCommandResult
+    public class CreateTrekCommandResult : ICommandResult
     {
         public CreateTrekCommandResult(Guid trekId)
         {

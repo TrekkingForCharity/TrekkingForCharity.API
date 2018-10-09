@@ -4,11 +4,19 @@
 // TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
-using TrekkingForCharity.Api.Core.Commands;
+using System;
+using FluentValidation;
+using TrekkingForCharity.Api.Core.Constants;
+using TrekkingForCharity.Api.Read.Queries;
 
-namespace TrekkingForCharity.Api.Write.CommandResult
+namespace TrekkingForCharity.Api.Read.QueryValidators
 {
-    public class UpdateWaypointCommandResult : ICommandResult
+    public class GetTrekByUserAndIdQueryValidator : AbstractValidator<GetTrekByUserAndIdQuery>
     {
+        public GetTrekByUserAndIdQueryValidator()
+        {
+            this.RuleFor(x=>x.TrekId).NotEqual(Guid.Empty).WithErrorCode(ValidationCodes.FieldIsRequired);
+            this.RuleFor(x => x.UserId).NotEmpty().WithErrorCode(ValidationCodes.FieldIsRequired);
+        }
     }
 }

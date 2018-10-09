@@ -14,6 +14,7 @@ using ResultMonad;
 using TrekkingForCharity.Api.App.DataTransport;
 using TrekkingForCharity.Api.Core;
 using TrekkingForCharity.Api.Core.Commands;
+using TrekkingForCharity.Api.Core.Queries;
 
 namespace TrekkingForCharity.Api.App.Helpers
 {
@@ -22,8 +23,13 @@ namespace TrekkingForCharity.Api.App.Helpers
         public static async Task<TCommand> GetCommand<TCommand>(this HttpRequestMessage requestMessage)
             where TCommand : ICommand
         {
-            var jsonContent = await requestMessage.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<TCommand>(jsonContent);
+            return await GetObjectFromContent<TCommand>(requestMessage);
+        }
+
+        public static async Task<TQuery> GetQuery<TQuery>(this HttpRequestMessage requestMessage)
+            where TQuery : IQuery
+        {
+            return await GetObjectFromContent<TQuery>(requestMessage);
         }
 
         public static HttpResponseMessage CreateResponseMessageFromExecutionResult(
@@ -34,12 +40,18 @@ namespace TrekkingForCharity.Api.App.Helpers
                 : requestMessage.CreateApiErrorResponse(result.Error);
         }
 
-        public static HttpResponseMessage CreateResponseMessageFromExecutionResult<TCommandResult>(
+        public static HttpResponseMessage CreateResponseMessageFromCommandResult<TCommandResult>(
             this HttpRequestMessage requestMessage, Result<TCommandResult, ErrorData> result)
+            where TCommandResult : ICommandResult
         {
-            return result.IsSuccess
-                ? requestMessage.CreateSuccessResponseMessage(result.Value)
-                : requestMessage.CreateApiErrorResponse(result.Error);
+            return CreateResponseMessageFromExecutionResult(requestMessage, result);
+        }
+
+        public static HttpResponseMessage CreateResponseMessageFromQueryResult<TQueryResult>(
+            this HttpRequestMessage requestMessage, Result<TQueryResult, ErrorData> result)
+            where TQueryResult : IQueryResult
+        {
+            return CreateResponseMessageFromExecutionResult(requestMessage, result);
         }
 
         public static HttpResponseMessage CreateApiErrorResponse(this HttpRequestMessage req, ErrorData errorData)
@@ -79,6 +91,20 @@ namespace TrekkingForCharity.Api.App.Helpers
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
                 }))
             };
+        }
+
+        private static HttpResponseMessage CreateResponseMessageFromExecutionResult<TResult>(
+            HttpRequestMessage requestMessage, Result<TResult, ErrorData> result)
+        {
+            return result.IsSuccess
+                ? requestMessage.CreateSuccessResponseMessage(result.Value)
+                : requestMessage.CreateApiErrorResponse(result.Error);
+        }
+
+        private static async Task<TObject> GetObjectFromContent<TObject>(HttpRequestMessage requestMessage)
+        {
+            var jsonContent = await requestMessage.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<TObject>(jsonContent);
         }
     }
 }

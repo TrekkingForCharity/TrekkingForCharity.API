@@ -12,53 +12,44 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Table;
-using Slugify;
 using TrekkingForCharity.Api.App.Helpers;
 using TrekkingForCharity.Api.App.Infrastructure;
+using TrekkingForCharity.Api.Read.Queries;
+using TrekkingForCharity.Api.Read.QueryProcessors;
+using TrekkingForCharity.Api.Read.QueryValidators;
 using TrekkingForCharity.Api.Write.CommandExecutors;
 using TrekkingForCharity.Api.Write.Commands;
 using TrekkingForCharity.Api.Write.CommandValidators;
 
-namespace TrekkingForCharity.Api.App.CommandEndpoints
+namespace TrekkingForCharity.Api.App.QueryEndpoints
 {
-    public static class CreateTrekCommandEndpoint
+    public static class GetTrekByUserAndIdQueryEndpoint
     {
-        [FunctionName("CreateTrekCommandEndpoint")]
+        [FunctionName("GetTrekByUserAndIdQueryEndpoint")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "commands/create-trek")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "queries/get-trek-by-user-and-id")]
             HttpRequestMessage req,
             [Table("trek")] CloudTable trekTable,
-            [Table("trekslug")] CloudTable trekSlugTable,
             TraceWriter log,
             ExecutionContext context)
         {
             try
             {
-                var config = context.GenerateConfigurationRoot();
+                var validator = new GetTrekByUserAndIdQueryValidator();
 
-                var currentUserAccessor = new CurrentUserAccessor(config, req);
+                var processor = new GetTrekByUserAndIdQueryProcessor(validator, trekTable);
 
-                var algoliaClient = AlgoliaClientAccessor.GetAlgoliaClient(config);
+                var cmd = await req.GetQuery<GetTrekByUserAndIdQuery>();
 
-                var trekIndexName = config["Algolia:TrekIndex"];
-
-                var trekIndex = algoliaClient.InitIndex(trekIndexName);
-
-                var validator = new CreateTrekCommandValidator();
-
-                var executor = new CreateTrekCommandExecutor(validator, trekTable, currentUserAccessor, trekIndex);
-
-                var cmd = await req.GetCommand<CreateTrekCommand>();
-
-                var validationResult = await executor.ValidateAndSetCommand(cmd);
+                var validationResult = await processor.ValidateAndSetQuery(cmd);
                 if (!validationResult.IsValid)
                 {
                     return req.CreateApiErrorResponseFromValidationResults(validationResult);
                 }
 
-                var result = await executor.Execute();
+                var result = await processor.Process();
 
-                return req.CreateResponseMessageFromCommandResult(result);
+                return req.CreateResponseMessageFromQueryResult(result);
             }
             catch (Exception ex)
             {

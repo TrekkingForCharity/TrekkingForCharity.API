@@ -51,7 +51,7 @@ namespace TrekkingForCharity.Api.App.CommandEndpoints
 
                 var result = await executor.Execute();
 
-                return req.CreateResponseMessageFromExecutionResult(result);
+                return req.CreateResponseMessageFromCommandResult(result);
             }
             catch (Exception ex)
             {

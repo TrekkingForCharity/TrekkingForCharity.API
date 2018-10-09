@@ -16,9 +16,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="CommandEndpoints\CreateUpdateCommandExecutor.cs" />
-    <Compile Remove="RestfulEndpoints\GetTrekById.cs" />
-    <Compile Remove="RestfulEndpoints\GetUpdatesForTrek.cs" />
-    <Compile Remove="RestfulEndpoints\GetWaypointsForTrek.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SharedFiles\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
@@ -59,12 +56,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="QueryEndpoints\" />
     <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="RestfulEndpoints\GetTrekById.cs" />
-    <None Include="RestfulEndpoints\GetUpdatesForTrek.cs" />
-    <None Include="RestfulEndpoints\GetWaypointsForTrek.cs" />
   </ItemGroup>
 </Project>

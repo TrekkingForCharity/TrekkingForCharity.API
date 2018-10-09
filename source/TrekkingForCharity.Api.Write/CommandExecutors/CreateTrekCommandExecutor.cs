@@ -77,7 +77,8 @@ namespace TrekkingForCharity.Api.Write.CommandExecutors
                 objectId = $"{trek.PartitionKey}¬{trek.RowKey}",
                 trekId = trek.RowKey,
                 userId = trek.PartitionKey,
-                whenToStart = trek.WhenToStart
+                whenToStart = trek.WhenToStart,
+                name = trek.Name
             }));
 
             return Result.Ok<CreateTrekCommandResult, ErrorData>(
