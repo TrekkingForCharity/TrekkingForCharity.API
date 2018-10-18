@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Table;
 using TrekkingForCharity.Api.App.Helpers;
 using TrekkingForCharity.Api.Read.Queries;
@@ -26,7 +27,7 @@ namespace TrekkingForCharity.Api.App.QueryEndpoints
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "queries/get-waypoints-for-trek")]
             HttpRequestMessage req,
             [Table("waypoint")] CloudTable waypointTable,
-            TraceWriter log,
+            ILogger log,
             ExecutionContext context)
         {
             try
@@ -49,7 +50,7 @@ namespace TrekkingForCharity.Api.App.QueryEndpoints
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message, ex);
+                log.LogError(ex.Message, ex);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
         }

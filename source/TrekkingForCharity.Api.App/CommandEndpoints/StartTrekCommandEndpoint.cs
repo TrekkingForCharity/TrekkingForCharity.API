@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Table;
 using TrekkingForCharity.Api.App.Helpers;
 using TrekkingForCharity.Api.App.Infrastructure;
@@ -27,7 +28,7 @@ namespace TrekkingForCharity.Api.App.CommandEndpoints
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "commands/start-trek")]
             HttpRequestMessage req,
             [Table("trek")] CloudTable trekTable,
-            TraceWriter log,
+            ILogger log,
             ExecutionContext context)
         {
             try
@@ -53,7 +54,7 @@ namespace TrekkingForCharity.Api.App.CommandEndpoints
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message, ex);
+                log.LogError(ex.Message, ex);
                 return req.CreateResponse(HttpStatusCode.InternalServerError);
             }
         }

@@ -11,6 +11,7 @@ using System.Net.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace TrekkingForCharity.Api.App.SecurityEndpoints
@@ -22,7 +23,7 @@ namespace TrekkingForCharity.Api.App.SecurityEndpoints
             [HttpTrigger(AuthorizationLevel.Function, methods: "POST", Route = "security/generate-sas-token")]
             HttpRequestMessage req,
             [Blob("demo", FileAccess.Read, Connection = "")]CloudBlobDirectory blobDirectory,
-            TraceWriter log)
+            ILogger log)
         {
             var permissions = SharedAccessBlobPermissions.Write;
 
