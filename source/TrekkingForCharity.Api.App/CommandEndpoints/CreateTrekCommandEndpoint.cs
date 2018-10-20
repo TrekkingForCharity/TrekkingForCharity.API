@@ -29,7 +29,6 @@ namespace TrekkingForCharity.Api.App.CommandEndpoints
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "commands/create-trek")]
             HttpRequestMessage req,
             [Table("trek")] CloudTable trekTable,
-            [Table("trekslug")] CloudTable trekSlugTable,
             ILogger log,
             ExecutionContext context)
         {
