@@ -24,7 +24,7 @@
     <AdditionalFiles Include="..\SharedFiles\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.1" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.23" />
     <PackageReference Include="ResultMonad" Version="1.0.1" />
     <PackageReference Include="Slugify.Core" Version="2.3.0" />
