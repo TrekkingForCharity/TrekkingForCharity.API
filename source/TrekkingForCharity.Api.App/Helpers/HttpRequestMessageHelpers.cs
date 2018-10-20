@@ -4,9 +4,11 @@
 // TrekkingForCharity.Api is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using FluentValidation.Results;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -23,13 +25,16 @@ namespace TrekkingForCharity.Api.App.Helpers
         public static async Task<TCommand> GetCommand<TCommand>(this HttpRequestMessage requestMessage)
             where TCommand : ICommand
         {
-            return await GetObjectFromContent<TCommand>(requestMessage);
+            var jsonContent = await requestMessage.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<TCommand>(jsonContent);
         }
 
-        public static async Task<TQuery> GetQuery<TQuery>(this HttpRequestMessage requestMessage)
+        public static TQuery GetQuery<TQuery>(this HttpRequestMessage requestMessage)
             where TQuery : IQuery
         {
-            return await GetObjectFromContent<TQuery>(requestMessage);
+            var dict = HttpUtility.ParseQueryString(requestMessage.RequestUri.Query);
+            var json = JsonConvert.SerializeObject(dict.Cast<string>().ToDictionary(k => k, v => dict[v]));
+            return JsonConvert.DeserializeObject<TQuery>(json);
         }
 
         public static HttpResponseMessage CreateResponseMessageFromExecutionResult(
@@ -99,12 +104,6 @@ namespace TrekkingForCharity.Api.App.Helpers
             return result.IsSuccess
                 ? requestMessage.CreateSuccessResponseMessage(result.Value)
                 : requestMessage.CreateApiErrorResponse(result.Error);
-        }
-
-        private static async Task<TObject> GetObjectFromContent<TObject>(HttpRequestMessage requestMessage)
-        {
-            var jsonContent = await requestMessage.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<TObject>(jsonContent);
         }
     }
 }

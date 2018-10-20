@@ -40,7 +40,7 @@ namespace TrekkingForCharity.Api.App.QueryEndpoints
 
                 var processor = new GetTrekByUserAndIdQueryProcessor(validator, trekTable);
 
-                var cmd = await req.GetQuery<GetTrekByUserAndIdQuery>();
+                var cmd = req.GetQuery<GetTrekByUserAndIdQuery>();
 
                 var validationResult = await processor.ValidateAndSetQuery(cmd);
                 if (!validationResult.IsValid)

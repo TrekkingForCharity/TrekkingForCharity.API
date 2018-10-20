@@ -36,7 +36,7 @@ namespace TrekkingForCharity.Api.App.QueryEndpoints
 
                 var processor = new GetWaypointsForTrekQueryProcessor(validator, waypointTable);
 
-                var cmd = await req.GetQuery<GetWaypointsForTrekQuery>();
+                var cmd = req.GetQuery<GetWaypointsForTrekQuery>();
 
                 var validationResult = await processor.ValidateAndSetQuery(cmd);
                 if (!validationResult.IsValid)

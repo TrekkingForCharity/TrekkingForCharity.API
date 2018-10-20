@@ -36,7 +36,7 @@ namespace TrekkingForCharity.Api.App.QueryEndpoints
 
                 var processor = new GetUpdatesForTrekQueryProcessor(validator, updateTable);
 
-                var cmd = await req.GetQuery<GetUpdatesForTrekQuery>();
+                var cmd = req.GetQuery<GetUpdatesForTrekQuery>();
 
                 var validationResult = await processor.ValidateAndSetQuery(cmd);
                 if (!validationResult.IsValid)
