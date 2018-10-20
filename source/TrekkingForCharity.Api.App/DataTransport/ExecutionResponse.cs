@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using TrekkingForCharity.Api.Core.Constants;
 using TrekkingForCharity.Api.Write.CommandExecutors;
 
 namespace TrekkingForCharity.Api.App.DataTransport
@@ -19,16 +20,16 @@ namespace TrekkingForCharity.Api.App.DataTransport
         {
         }
 
-        private ExecutionResponse(bool succeeded, object successReference = null, string errorCode = null, string failMessage = null)
+        private ExecutionResponse(bool succeeded, object successReference = null, ErrorCodes errorCode = ErrorCodes.UntypedError, string failMessage = null)
         {
             this.FailMessage = succeeded ? string.Empty : failMessage ?? string.Empty;
-            this.ErrorCode = succeeded ? string.Empty : errorCode ?? string.Empty;
+            this.ErrorCode = succeeded ? ErrorCodes.NoError : errorCode;
             this.Result = succeeded ? successReference : null;
             this.Success = succeeded;
             this._errors = new List<ValidationError>();
         }
 
-        public string ErrorCode { get; }
+        public ErrorCodes ErrorCode { get; }
 
         public string FailMessage { get; }
 
@@ -38,7 +39,7 @@ namespace TrekkingForCharity.Api.App.DataTransport
 
         public IReadOnlyCollection<ValidationError> Errors => this._errors.AsReadOnly();
 
-        public static ExecutionResponse CreateFailedExecutionResponse(string errorCode, string message)
+        public static ExecutionResponse CreateFailedExecutionResponse(ErrorCodes errorCode, string message)
         {
             var executionResponse = new ExecutionResponse(false, errorCode: errorCode, failMessage: message);
 

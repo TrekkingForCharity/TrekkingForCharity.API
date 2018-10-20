@@ -6,18 +6,19 @@
 
 namespace TrekkingForCharity.Api.Core.Constants
 {
-    public static class ErrorCodes
+    public enum ErrorCodes
     {
-        public const string UntypedError = "ERR-000000";
-        public const string Validation = "ERR-000001";
-        public const string TrekNotFound = "ERR-000002";
-        public const string Creation = "ERR-000003";
-        public const string TrekNameInUse = "ERR-000004";
-        public const string WaypointNotFound = "ERR-000005";
-        public const string NotAuthenticated = "ERR-000006";
-        public const string CommandIsNotSet = "ERR-000007";
-        public const string Deletion = "ERR-000008";
-        public const string UpdatesNotFound = "ERR-000009";
-        public const string QueryIsNotSet = "ERR-000010";
+        UntypedError = -1,
+        NoError = 0,
+        Validation = 1,
+        TrekNotFound = 2,
+        Creation = 3,
+        TrekNameInUse = 4,
+        WaypointNotFound = 5,
+        NotAuthenticated = 6,
+        CommandIsNotSet = 7,
+        Deletion = 8,
+        UpdatesNotFound = 9,
+        QueryIsNotSet = 10
     }
 }

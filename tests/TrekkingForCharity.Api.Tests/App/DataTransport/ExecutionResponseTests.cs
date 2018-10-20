@@ -5,6 +5,7 @@
 // You should have received a copy of the GNU General Public License along with TrekkingForCharity.Api. If not, see http://www.gnu.org/licenses/.
 
 using TrekkingForCharity.Api.App.DataTransport;
+using TrekkingForCharity.Api.Core.Constants;
 using Xunit;
 
 namespace TrekkingForCharity.Api.Tests.App.DataTransport
@@ -14,9 +15,9 @@ namespace TrekkingForCharity.Api.Tests.App.DataTransport
         [Fact]
         public void ShouldHaveSimpleErrorWhenCreatingFailedExecutionResult()
         {
-            var er = ExecutionResponse.CreateFailedExecutionResponse("ERR-001", "Some Error");
+            var er = ExecutionResponse.CreateFailedExecutionResponse((ErrorCodes)1, "Some Error");
             Assert.False(er.Success);
-            Assert.Equal("ERR-001", er.ErrorCode);
+            Assert.Equal((ErrorCodes)1, er.ErrorCode);
             Assert.Equal("Some Error", er.FailMessage);
             Assert.Equal(0, er.Errors.Count);
             Assert.Null(er.Result);
@@ -28,7 +29,7 @@ namespace TrekkingForCharity.Api.Tests.App.DataTransport
             var data = new { d = 123 };
             var er = ExecutionResponse.CreateSuccessfulExecutionResponse(data);
             Assert.True(er.Success);
-            Assert.Equal(string.Empty, er.ErrorCode);
+            Assert.Equal(ErrorCodes.NoError, er.ErrorCode);
             Assert.Equal(string.Empty, er.FailMessage);
             Assert.Equal(0, er.Errors.Count);
             Assert.Equal(data, er.Result);
@@ -39,7 +40,7 @@ namespace TrekkingForCharity.Api.Tests.App.DataTransport
         {
             var er = ExecutionResponse.CreateEmptySuccessfulExecutionResponse();
             Assert.True(er.Success);
-            Assert.Equal(string.Empty, er.ErrorCode);
+            Assert.Equal(ErrorCodes.NoError, er.ErrorCode);
             Assert.Equal(string.Empty, er.FailMessage);
             Assert.Equal(0, er.Errors.Count);
             Assert.Null(er.Result);
